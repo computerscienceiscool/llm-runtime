@@ -26,12 +26,12 @@ You can embed the following commands in your responses, and they will be execute
    - Use this to run commands in a secure Docker container
    - Commands run in isolation with NO network access
    - Only whitelisted commands are allowed for security
-   - Exec commands are always enabled (container-based security)
+   - Exec commands are disabled by default; enable explicitly in config
    - Example: `<exec go test>` or `<exec npm build>`
 
 4. **Semantic search**: `<search query>`
    - Use this to find files related to specific concepts or functionality
-   - Powered by local Ollama embeddings (no external API calls)
+   - Powered by local embeddings (default: all-MiniLM-L6-v2; set to Ollama `nomic-embed-text` if using Ollama)
    - Understands meaning, not just keywords
    - Example: `<search user authentication logic>` or `<search database queries>`
 
@@ -46,7 +46,7 @@ All operations execute in isolated Docker containers:
 - **Resource limits**: Memory, CPU, and timeout restrictions enforced
 
 **Exec Command Security:**
-- Commands run in sandboxed Docker containers (default: python-go image)
+- Commands run in sandboxed Docker containers (default image: ubuntu:22.04; set to python-go when you need Go/Python)
 - No network access - completely isolated
 - Repository mounted read-only at `/workspace`
 - Temporary directory for writes at `/tmp/workspace`
@@ -62,7 +62,7 @@ All operations execute in isolated Docker containers:
 - System: `ls`, `cat`, `grep`, `find`, `head`, `tail`, `wc`
 
 **Search Configuration:**
-- Uses Ollama with `nomic-embed-text` model for embeddings
+- Default embedding model: `all-MiniLM-L6-v2`; for Ollama set `nomic-embed-text`
 - All processing happens locally on your machine
 - Index stored in SQLite database (`embeddings.db`)
 - Requires initial indexing: `./llm-runtime --reindex`

@@ -4,13 +4,13 @@
 
 The `<exec>` command allows LLMs to execute shell commands in secure, isolated Docker containers. This enables LLMs to run tests, build projects, validate changes, and interact with development tools without compromising system security.
 
-**Note**: Exec commands are always enabled via the container-based security model. Access is controlled exclusively through the command whitelist.
+**Note**: Exec commands are **disabled by default**; enable them explicitly and configure the whitelist.
 
 ## How It Works
 
 When an LLM includes an `<exec>` command, the tool:
 1. **Validates the command** - Checks against whitelist of allowed commands
-2. **Creates Docker container** - Spins up isolated container (default: python-go image)
+2. **Creates Docker container** - Spins up isolated container (default image: ubuntu:22.04; set to `python-go` if you need Go/Python)
 3. **Mounts repository** - Repository mounted read-only at `/workspace`
 4. **Executes command** - Runs command with strict resource limits
 5. **Captures output** - Returns stdout, stderr, and exit code
@@ -243,9 +243,8 @@ Command: <exec rm -rf />
 ```yaml
 commands:
   exec:
-    # Note: Exec is always enabled (container-based security).
-    # Access is controlled via whitelist only.
-    container_image: "python-go"
+    enabled: false  # Enable explicitly; access controlled via whitelist
+    container_image: "ubuntu:22.04"  # Set to python-go if you need Go/Python
     timeout_seconds: 30
     memory_limit: "512m"
     cpu_limit: 2

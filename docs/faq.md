@@ -329,9 +329,7 @@ Yes, but each `<write>` command modifies one file. For multiple files:
 
 ### Is command execution always enabled?
 
-Yes. Execution is always available via the container-based security model. Access is controlled solely by the whitelist.
-
-Note: Older documentation mentioned an `--exec-enabled` flag, but exec is now always enabled.
+No. Execution is disabled by default; enable it explicitly in config and keep the whitelist tight. Containers remain the security boundary once enabled.
 
 ### How do I allow new commands?
 

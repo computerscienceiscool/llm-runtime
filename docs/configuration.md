@@ -159,11 +159,15 @@ commands:
 
 ## Exec Command Configuration
 
-**Note**: Exec commands are always enabled (container-based security model). Access is controlled via the whitelist only.
+**Note**: Exec commands are disabled by default. Enable them explicitly and ensure the whitelist is set.
+
+### `commands.exec.enabled`
+**Default**: `false`  
+**Description**: Enable execution of `<exec>` commands (runs in Docker)
 
 ### `commands.exec.container_image`
-**Default**: `"python-go"`  
-**Description**: Docker image for command execution  
+**Default**: `"ubuntu:22.04"`  
+**Description**: Docker image for command execution (set to `python-go` if you need Go/Python preinstalled)  
 ```yaml
 commands:
   exec:
@@ -276,7 +280,7 @@ io_cpu_limit: 1
 
 ## Search Command Configuration
 
-Search uses [Ollama](https://ollama.com) with the `nomic-embed-text` model for local embedding generation.
+Search uses embeddings for similarity; the default model is `all-MiniLM-L6-v2`. If you use [Ollama](https://ollama.com), set `embedding_model` to `nomic-embed-text` and pull that model.
 
 ### `commands.search.enabled`
 **Default**: `false`  
@@ -322,7 +326,7 @@ commands:
 # Install Ollama
 curl -fsSL https://ollama.com/install.sh | sh
 
-# Pull embedding model
+# Pull embedding model (if using Ollama)
 ollama pull nomic-embed-text
 
 # Build search index

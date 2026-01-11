@@ -30,11 +30,11 @@ container_pool:
 ```
 See [docs/container-pooling.md](docs/container-pooling.md) for details.
 
-### 2. Exec Container (`python-go`)
+### 2. Exec Container (default `ubuntu:22.04`, recommended `python-go`)
 - **Purpose**: Handles `<exec>` commands  
-- **Image**: Prebuilt `python-go` image (has Python and Go)
-- **How to get**: `docker pull python-go`
-- **Included**: Python, Go, and common development tools
+- **Default image**: `ubuntu:22.04` (exec is disabled by default in config)  
+- **Recommended image**: Prebuilt `python-go` (Python + Go) — pull with `docker pull python-go` when enabling exec
+- **Included in python-go**: Python, Go, and common development tools
 
 ## Installation
 
@@ -52,7 +52,7 @@ cd llm-runtime
 # STEP 1: Build the I/O container (REQUIRED for file operations)
 make build-io-image
 
-# STEP 2: Pull the exec container (has Python and Go)
+# STEP 2: (Optional) Pull the recommended exec container (Python + Go)
 docker pull python-go
 
 # STEP 3: Build the binary
@@ -655,8 +655,8 @@ commands:
 
   # Exec command (uses exec container)
   exec:
-    enabled: true
-    container_image: "python-go"  # Has Python and Go
+    enabled: false                 # Default is off; enable explicitly
+    container_image: "ubuntu:22.04"  # Set to python-go when you need Go/Python
     timeout_seconds: 30
     memory_limit: "512m"
     cpu_limit: 2
@@ -679,7 +679,7 @@ commands:
   search:
     enabled: false  # Set to true to enable
     ollama_url: "http://localhost:11434"
-    embedding_model: "nomic-embed-text"
+    embedding_model: "all-MiniLM-L6-v2"  # Default; set to nomic-embed-text for Ollama
     max_results: 10
 
 # Container pool (optional - for I/O operations only)
@@ -701,8 +701,8 @@ security:
 ## Search Feature Setup
 
 ### Requirements
-- Ollama installed and running
-- nomic-embed-text model
+- Ollama installed and running (if using Ollama-backed embeddings)
+- Embedding model (default: `all-MiniLM-L6-v2`; for Ollama use `nomic-embed-text`)
 
 ### Installation Steps
 
@@ -710,7 +710,7 @@ security:
 # 1. Install Ollama
 curl -fsSL https://ollama.com/install.sh | sh
 
-# 2. Pull the embedding model
+# 2. Pull the embedding model (if using Ollama)
 ollama pull nomic-embed-text
 
 # 3. Verify Ollama is running
