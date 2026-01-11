@@ -41,10 +41,11 @@ func init() {
 	rootCmd.PersistentFlags().Bool("force", false, "Force write even if conflicts exist")
 
 	// Exec flags
+	rootCmd.PersistentFlags().Bool("exec-enabled", false, "Enable exec commands")
 	rootCmd.PersistentFlags().String("exec-timeout", "30s", "Timeout for exec commands")
 	rootCmd.PersistentFlags().String("exec-memory", "512m", "Memory limit for containers")
-	rootCmd.PersistentFlags().Int("exec-cpu", 1, "CPU limit for containers")
-	rootCmd.PersistentFlags().String("exec-image", "python-go", "Docker image for exec commands")
+	rootCmd.PersistentFlags().Int("exec-cpu", 2, "CPU limit for containers")
+	rootCmd.PersistentFlags().String("exec-image", "ubuntu:22.04", "Docker image for exec commands")
 	rootCmd.PersistentFlags().Bool("exec-network", false, "Enable network access in containers")
 	rootCmd.PersistentFlags().StringSlice("exec-whitelist", []string{}, "Comma-separated list of allowed exec commands")
 

@@ -51,6 +51,7 @@ func newTestConfig(tmpDir string) *config.Config {
 		ExcludedPaths:     []string{".git", ".env", "*.key", "*.pem"},
 		AllowedExtensions: []string{".go", ".py", ".js", ".md", ".txt", ".json", ".yaml"},
 		BackupBeforeWrite: true,
+		ExecEnabled:       true,
 		IOTimeout:         60 * time.Second,
 		IOContainerImage:  "llm-runtime-io:latest",
 	}

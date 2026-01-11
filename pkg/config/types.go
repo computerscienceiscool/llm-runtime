@@ -10,6 +10,7 @@ type Config struct {
 	MaxFileSize         int64
 	MaxWriteSize        int64
 	ExcludedPaths       []string
+	ExecEnabled         bool
 	Interactive         bool
 	InputFile           string
 	OutputFile          string
@@ -29,7 +30,7 @@ type Config struct {
 	IOTimeout           time.Duration
 	IOMemoryLimit       string
 	IOCPULimit          int
-	ContainerPool PoolConfig
+	ContainerPool       PoolConfig
 }
 
 // FullConfig represents the complete configuration structure including search

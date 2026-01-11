@@ -16,6 +16,18 @@ func ExecuteExec(cmd scanner.Command, cfg *config.Config, auditLog func(cmdType,
 		Command: cmd,
 	}
 
+	// Enforce exec enablement
+	if !cfg.ExecEnabled {
+		result.Success = false
+		disabledErr := fmt.Errorf("EXEC_DISABLED: exec commands are disabled; set commands.exec.enabled=true to allow")
+		result.Error = SanitizeError(disabledErr)
+		result.ExecutionTime = time.Since(startTime)
+		if auditLog != nil {
+			auditLog("exec", cmd.Argument, false, disabledErr.Error())
+		}
+		return result
+	}
+
 	// Validate command
 	if err := sandbox.ValidateExecCommand(cmd.Argument, cfg.ExecWhitelist); err != nil {
 		result.Success = false

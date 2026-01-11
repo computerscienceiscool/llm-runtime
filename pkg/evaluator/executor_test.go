@@ -157,6 +157,7 @@ func TestExecutor_Execute_WriteCommand(t *testing.T) {
 func TestExecutor_Execute_ExecCommand_Disabled(t *testing.T) {
 	tmpDir := t.TempDir()
 	cfg := newTestConfig(tmpDir)
+	cfg.ExecEnabled = false
 
 	executor := NewExecutor(cfg, nil, nil, nil)
 
@@ -175,8 +176,8 @@ func TestExecutor_Execute_ExecCommand_Disabled(t *testing.T) {
 		t.Error("expected error to be set")
 	}
 
-	if !strings.Contains(result.Error.Error(), "EXEC_VALIDATION") {
-		t.Errorf("expected EXEC_VALIDATION error, got: %v", result.Error)
+	if !strings.Contains(result.Error.Error(), "EXEC_DISABLED") {
+		t.Errorf("expected EXEC_DISABLED error, got: %v", result.Error)
 	}
 }
 
@@ -548,6 +549,7 @@ func TestExecutor_Execute_ExecWithEmptyWhitelist(t *testing.T) {
 	tmpDir := t.TempDir()
 	cfg := newTestConfig(tmpDir)
 	cfg.ExecWhitelist = []string{} // Empty whitelist
+	cfg.ExecEnabled = true
 
 	executor := NewExecutor(cfg, nil, nil, nil)
 
@@ -572,6 +574,7 @@ func TestExecutor_Execute_ExecWithEmptyCommand(t *testing.T) {
 	tmpDir := t.TempDir()
 	cfg := newTestConfig(tmpDir)
 	cfg.ExecWhitelist = []string{"ls"}
+	cfg.ExecEnabled = true
 
 	executor := NewExecutor(cfg, nil, nil, nil)
 

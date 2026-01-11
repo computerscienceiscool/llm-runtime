@@ -7,8 +7,7 @@ Maintain zero-padded IDs starting at 001 and do not renumber. Keep only this ind
 - [ ] 002 - Update tests referencing the removed `PythonPath` field.
 - [ ] 003 - Fix parser tests expecting mid-line command matching.
 - [ ] 004 - Resolve app test nil pointer issues.
-- [ ] 011 - Enforce `commands.exec.enabled` flag (Config lacks an exec-enabled field and `ExecuteExec` runs regardless of config, so exec cannot be disabled; add config plumbing + guard + tests).
-- [ ] 014 - Define approach for shell exec command injection protections (decide security modes and enforcement for exec whitelist vs shell flexibility; document outcome).
+ - [ ] 014 - Define approach for shell exec command injection protections (decide security modes and enforcement for exec whitelist vs shell flexibility; document outcome).
 
 ## Medium Priority
 - [ ] 005 - Add troubleshooting for common Ollama issues.
@@ -26,6 +25,7 @@ Maintain zero-padded IDs starting at 001 and do not renumber. Keep only this ind
 ## DONE
 - [x] 012 - Align exec defaults in docs/README with code (docs claimed exec always enabled and default image `python-go`; defaults disable exec and use `ubuntu:22.04`).
 - [x] 013 - Align search docs with code defaults (docs called for `nomic-embed-text` as default; defaults use `all-MiniLM-L6-v2`).
+- [x] 011 - Enforce `commands.exec.enabled` flag (Config lacked enable field and `ExecuteExec` ran regardless of config; added plumbing + guard + tests).
 
 ## Other TODO Files
 - docs/TODO.md

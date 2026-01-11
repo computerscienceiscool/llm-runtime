@@ -90,6 +90,14 @@ func buildConfig() (*config.Config, error) {
 			cfg.ExecWhitelist = viper.GetStringSlice("commands.exec.whitelist")
 		}
 	}
+
+	// exec-enabled: prefer flag/env over config file default
+	execEnabled := viper.GetBool("commands.exec.enabled")
+	if viper.IsSet("exec-enabled") {
+		execEnabled = viper.GetBool("exec-enabled")
+	}
+	cfg.ExecEnabled = execEnabled
+
 	//fmt.Printf("DEBUG buildConfig: RepositoryRoot = %s\n", cfg.RepositoryRoot)
 
 	return cfg, nil
