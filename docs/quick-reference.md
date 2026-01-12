@@ -397,32 +397,19 @@ All tests passing, build successful.
 ## Makefile Targets
 
 ```bash
-# Build
-make build          # Build binary
-make clean          # Remove build artifacts
-make rebuild        # Clean + build
-
-# Testing
-make test           # Run tests
-make test-verbose   # Verbose tests
-make test-coverage  # Coverage report
-
-# Docker
-make build-io-image     # Build I/O container
-make check-io-image     # Verify I/O image exists
-make pull-images        # Pull all required images
-
-# Search
-make reindex        # Rebuild search index
-
-# Installation
-make install        # Install to $GOPATH/bin
-make uninstall      # Remove from $GOPATH/bin
-
-# Development
-make fmt            # Format code
-make lint           # Run linters
-make vet            # Run go vet
+make           # Show help menu
+make build     # Build binary
+make test      # Run tests (full)
+make test-fast # Quick tests (CLI/config/scanner/session)
+make test-coverage # Coverage report
+make bench     # Benchmarks
+make fmt vet deps # Format, vet, download deps
+make run       # Interactive mode
+make demo/example/exec-demo # Run demo scripts
+make test-suite # Comprehensive suite incl. Docker checks
+make build-io-image / check-io-image / test-io-container # I/O container helpers
+make clean / clean-all # Clean artifacts (clean-all removes Docker images)
+make release   # Create release tarball
 ```
 
 ## File Paths
