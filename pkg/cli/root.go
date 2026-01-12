@@ -12,7 +12,7 @@ var rootCmd = &cobra.Command{
 	Use:   "llm-runtime",
 	Short: "LLM File Access Tool - Command interpreter for LLMs",
 	Long: `llm-runtime enables Large Language Models to interact with local filesystems
-and execute sandboxed commands. It processes commands like <open>, <write>, <exec>, and <search>.`,
+	and execute sandboxed commands. It processes commands like <open>, <write>, <exec>, and <search>.`,
 	RunE: runRoot,
 }
 
@@ -63,6 +63,9 @@ func init() {
 }
 
 func runRoot(cmd *cobra.Command, args []string) error {
+	if viper.GetBool("auto") {
+		return runAutoDetect()
+	}
 	// Build config from viper
 	cfg, err := buildConfig()
 	if err != nil {
