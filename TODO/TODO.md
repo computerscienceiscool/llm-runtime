@@ -9,17 +9,15 @@ Maintain zero-padded IDs starting at 001 and do not renumber. Keep only this ind
 - [ ] 004 - Resolve app test nil pointer issues.
 - [ ] 014 - Define approach for shell exec command injection protections (decide security modes and enforcement for exec whitelist vs shell flexibility; document outcome).
 - [ ] 018 - Speed up test suite (cache modules, reduce Docker-dependent cases, add fast paths/flags).
-- [ ] 007 - Decide and document the container image validation approach (whitelist vs digest pinning vs patterns).
 
 ## Medium Priority
 - [x] 005 - Add troubleshooting for common Ollama issues.
 - [ ] 006 - Document the config persona system when implemented.
-- [ ] 007 - Decide and document the container image validation approach (whitelist vs digest pinning vs patterns).
 - [ ] 015 - Implement MCP integration (Model Context Protocol) for standardized LLM tool integration; document usage.
 - [ ] 016 - Add CLI project detection (`llm-runtime --auto`) to suggest configs based on repo type.
 
 ## Low Priority
-- [ ] 008 - Add example workflows in `docs/examples/`.
+- [x] 008 - Add example workflows in `docs/examples/`.
 - [ ] 009 - Add architecture diagrams as images in documentation.
 - [ ] 010 - Implement streaming output for large command results.
 - [ ] 017 - Add additional commands: `<git status>`, `<git diff>`, `<tree>`, `<grep pattern>` for richer repo introspection.
@@ -33,6 +31,7 @@ Maintain zero-padded IDs starting at 001 and do not renumber. Keep only this ind
 - [x] 021 - Add a stub `--auto` detection flag that reports planned project-type suggestions.
 - [x] 022 - Improve `make help` output to list targets clearly and make `make` show the help menu.
 - [x] 023 - Document `make test-fast` usage in README/docs.
+- [x] 007 - Decide and document the container image validation approach (whitelist vs digest pinning vs patterns).
 
 ## Other TODO Files
 - docs/TODO.md
