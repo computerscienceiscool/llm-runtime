@@ -113,6 +113,11 @@ quick-test: build
 	@echo "Testing with simple command..."
 	@echo "Let me read the README: <open README.md>" | $(BINARY_PATH)
 
+test-fast:
+	@echo "Running fast tests (excluding Docker-heavy packages)..."
+	@GOCACHE=$(PWD)/.gocache go test ./cmd/... ./pkg/cli ./pkg/config ./pkg/scanner ./pkg/session
+	@echo "Fast tests complete"
+
 # Test write functionality
 test-write: build
 	@echo "Testing write functionality..."

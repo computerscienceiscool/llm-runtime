@@ -187,6 +187,10 @@ In interactive mode, the tool continuously processes input and executes commands
 ./llm-runtime --input llm_output.txt --output results.txt 
 ```
 
+### Auto Detection (preview)
+
+Use `--auto` to scan the current repo for common markers (`go.mod`, `package.json`, `requirements.txt`) and print suggested configs. This is a preview/stub; it does not change any settings automatically.
+
 
 ## Repository Isolation
 
