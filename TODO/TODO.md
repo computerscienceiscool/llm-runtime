@@ -9,9 +9,9 @@ Maintain zero-padded IDs starting at 001 and do not renumber. Keep only this ind
 - [ ] 004 - Resolve app test nil pointer issues.
 - [ ] 014 - Define approach for shell exec command injection protections (decide security modes and enforcement for exec whitelist vs shell flexibility; document outcome).
 - [ ] 018 - Speed up test suite (cache modules, reduce Docker-dependent cases, add fast paths/flags).
-- [ ] 019 - Document exec container image validation rules and expected errors in docs.
-- [ ] 020 - Add an example workflow to docs/examples/ (e.g., read/write and run tests).
-- [ ] 021 - Add a stub `--auto` detection flag that reports planned project-type suggestions.
+- [x] 019 - Document exec container image validation rules and expected errors in docs.
+- [x] 020 - Add an example workflow to docs/examples/ (e.g., read/write and run tests).
+- [x] 021 - Add a stub `--auto` detection flag that reports planned project-type suggestions.
 - [x] 022 - Improve `make help` output to list targets clearly and make `make` show the help menu.
 - [x] 023 - Document `make test-fast` usage in README/docs.
 - [ ] 023 - Document `make test-fast` usage in README/docs.
@@ -33,6 +33,9 @@ Maintain zero-padded IDs starting at 001 and do not renumber. Keep only this ind
 - [x] 012 - Align exec defaults in docs/README with code (docs claimed exec always enabled and default image `python-go`; defaults disable exec and use `ubuntu:22.04`).
 - [x] 013 - Align search docs with code defaults (docs called for `nomic-embed-text` as default; defaults use `all-MiniLM-L6-v2`).
 - [x] 011 - Enforce `commands.exec.enabled` flag (Config lacked enable field and `ExecuteExec` ran regardless of config; added plumbing + guard + tests).
+- [x] 019 - Document exec container image validation rules and expected errors in docs.
+- [x] 020 - Add an example workflow to docs/examples/ (e.g., read/write and run tests).
+- [x] 021 - Add a stub `--auto` detection flag that reports planned project-type suggestions.
 
 ## Other TODO Files
 - docs/TODO.md
