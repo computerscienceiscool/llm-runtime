@@ -356,9 +356,9 @@ func TestValidateContainerImageName(t *testing.T) {
 		{"underscore allowed", "python_go:latest", false, ""},
 		{"slash allowed", "ghcr.io/owner/image:tag", false, ""},
 		{"empty", "   ", true, "cannot be empty"},
-		{"whitespace", "ubuntu latest", true, "not well-formed"},
+		{"whitespace", "ubuntu latest", true, "invalid characters"},
 		{"semicolon injection", "ubuntu:22.04;rm -rf /", true, "invalid characters"},
-		{"backtick injection", "`rm -rf /`", true, "not well-formed"},
+		{"backtick injection", "`rm -rf /`", true, "invalid characters"},
 		{"invalid chars", "ubuntu:latest|echo", true, "invalid characters"},
 	}
 

@@ -549,6 +549,7 @@ func TestExecutor_Execute_ExecWithEmptyWhitelist(t *testing.T) {
 	tmpDir := t.TempDir()
 	cfg := newTestConfig(tmpDir)
 	cfg.ExecWhitelist = []string{} // Empty whitelist
+	cfg.ExecContainerImage = "alpine:latest"
 	cfg.ExecEnabled = true
 
 	executor := NewExecutor(cfg, nil, nil, nil)
@@ -574,6 +575,7 @@ func TestExecutor_Execute_ExecWithEmptyCommand(t *testing.T) {
 	tmpDir := t.TempDir()
 	cfg := newTestConfig(tmpDir)
 	cfg.ExecWhitelist = []string{"ls"}
+	cfg.ExecContainerImage = "alpine:latest"
 	cfg.ExecEnabled = true
 
 	executor := NewExecutor(cfg, nil, nil, nil)

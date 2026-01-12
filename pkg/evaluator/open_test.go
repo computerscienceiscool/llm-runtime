@@ -45,15 +45,16 @@ func (t *testAuditLog) reset() {
 // newTestConfig creates a config suitable for testing with the given temp directory
 func newTestConfig(tmpDir string) *config.Config {
 	return &config.Config{
-		RepositoryRoot:    tmpDir,
-		MaxFileSize:       1024 * 1024, // 1MB
-		MaxWriteSize:      1024 * 100,  // 100KB
-		ExcludedPaths:     []string{".git", ".env", "*.key", "*.pem"},
-		AllowedExtensions: []string{".go", ".py", ".js", ".md", ".txt", ".json", ".yaml"},
-		BackupBeforeWrite: true,
-		ExecEnabled:       true,
-		IOTimeout:         60 * time.Second,
-		IOContainerImage:  "llm-runtime-io:latest",
+		RepositoryRoot:     tmpDir,
+		MaxFileSize:        1024 * 1024, // 1MB
+		MaxWriteSize:       1024 * 100,  // 100KB
+		ExcludedPaths:      []string{".git", ".env", "*.key", "*.pem"},
+		AllowedExtensions:  []string{".go", ".py", ".js", ".md", ".txt", ".json", ".yaml"},
+		BackupBeforeWrite:  true,
+		ExecEnabled:        true,
+		ExecContainerImage: "alpine:latest",
+		IOTimeout:          60 * time.Second,
+		IOContainerImage:   "llm-runtime-io:latest",
 	}
 }
 

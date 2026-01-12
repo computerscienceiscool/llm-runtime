@@ -8,6 +8,7 @@ Maintain zero-padded IDs starting at 001 and do not renumber. Keep only this ind
 - [ ] 003 - Fix parser tests expecting mid-line command matching.
 - [ ] 004 - Resolve app test nil pointer issues.
 - [ ] 014 - Define approach for shell exec command injection protections (decide security modes and enforcement for exec whitelist vs shell flexibility; document outcome).
+- [ ] 018 - Speed up test suite (cache modules, reduce Docker-dependent cases, add fast paths/flags).
 
 ## Medium Priority
 - [x] 005 - Add troubleshooting for common Ollama issues.

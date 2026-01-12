@@ -51,11 +51,12 @@ func TestExecuteExec_Disabled(t *testing.T) {
 
 func TestExecuteExec_EmptyWhitelist(t *testing.T) {
 	cfg := &config.Config{
-		RepositoryRoot:   t.TempDir(),
-		IOTimeout:        60 * time.Second,
-		IOContainerImage: "llm-runtime-io:latest",
-		ExecEnabled:      true,
-		ExecWhitelist:    []string{}, // Empty whitelist
+		RepositoryRoot:     t.TempDir(),
+		IOTimeout:          60 * time.Second,
+		IOContainerImage:   "llm-runtime-io:latest",
+		ExecEnabled:        true,
+		ExecContainerImage: "alpine:latest",
+		ExecWhitelist:      []string{}, // Empty whitelist
 	}
 
 	cmd := scanner.Command{Type: "exec", Argument: "ls"}
@@ -72,11 +73,12 @@ func TestExecuteExec_EmptyWhitelist(t *testing.T) {
 
 func TestExecuteExec_CommandNotWhitelisted(t *testing.T) {
 	cfg := &config.Config{
-		RepositoryRoot:   t.TempDir(),
-		IOTimeout:        60 * time.Second,
-		IOContainerImage: "llm-runtime-io:latest",
-		ExecEnabled:      true,
-		ExecWhitelist:    []string{"go test", "npm test"},
+		RepositoryRoot:     t.TempDir(),
+		IOTimeout:          60 * time.Second,
+		IOContainerImage:   "llm-runtime-io:latest",
+		ExecEnabled:        true,
+		ExecContainerImage: "alpine:latest",
+		ExecWhitelist:      []string{"go test", "npm test"},
 	}
 
 	cmd := scanner.Command{Type: "exec", Argument: "rm -rf /"}
@@ -93,11 +95,12 @@ func TestExecuteExec_CommandNotWhitelisted(t *testing.T) {
 
 func TestExecuteExec_EmptyCommand(t *testing.T) {
 	cfg := &config.Config{
-		RepositoryRoot:   t.TempDir(),
-		IOTimeout:        60 * time.Second,
-		IOContainerImage: "llm-runtime-io:latest",
-		ExecEnabled:      true,
-		ExecWhitelist:    []string{"ls"},
+		RepositoryRoot:     t.TempDir(),
+		IOTimeout:          60 * time.Second,
+		IOContainerImage:   "llm-runtime-io:latest",
+		ExecEnabled:        true,
+		ExecContainerImage: "alpine:latest",
+		ExecWhitelist:      []string{"ls"},
 	}
 
 	cmd := scanner.Command{Type: "exec", Argument: ""}
