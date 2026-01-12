@@ -24,8 +24,8 @@ LDFLAGS=-ldflags "-s -w"
 
 .PHONY: all build test clean install uninstall fmt vet deps run demo example exec-demo
 
-# Default target
-all: test build
+# Default target shows help
+all: help
 
 # Build the binary
 build:
@@ -238,6 +238,7 @@ help:
 	@echo "Available targets:"
 	@echo "  make build         - Build the binary"
 	@echo "  make test          - Run tests"
+	@echo "  make test-fast     - Run fast tests (CLI/config/scanner/session)"
 	@echo "  make test-coverage - Run tests with coverage report"
 	@echo "  make bench         - Run benchmarks"
 	@echo "  make clean         - Remove build artifacts"
