@@ -13,6 +13,7 @@ Maintain zero-padded IDs starting at 001 and do not renumber. Keep only this ind
 - [ ] 020 - Add an example workflow to docs/examples/ (e.g., read/write and run tests).
 - [ ] 021 - Add a stub `--auto` detection flag that reports planned project-type suggestions.
 - [x] 022 - Improve `make help` output to list targets clearly and make `make` show the help menu.
+- [ ] 023 - Document `make test-fast` usage in README/docs.
 
 ## Medium Priority
 - [x] 005 - Add troubleshooting for common Ollama issues.

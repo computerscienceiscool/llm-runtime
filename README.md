@@ -859,6 +859,7 @@ Planned features for future versions:
 1. Ensure all tests pass
 2. Add tests for new features
 3. Update documentation
+4. For a quick sanity check without Docker-heavy suites, use `make test-fast`; for full coverage, use `make test` or `go test ./...`.
 4. Follow Go best practices
 5. Test with Docker security in mind
 
