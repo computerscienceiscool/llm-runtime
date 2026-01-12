@@ -9,12 +9,7 @@ Maintain zero-padded IDs starting at 001 and do not renumber. Keep only this ind
 - [ ] 004 - Resolve app test nil pointer issues.
 - [ ] 014 - Define approach for shell exec command injection protections (decide security modes and enforcement for exec whitelist vs shell flexibility; document outcome).
 - [ ] 018 - Speed up test suite (cache modules, reduce Docker-dependent cases, add fast paths/flags).
-- [x] 019 - Document exec container image validation rules and expected errors in docs.
-- [x] 020 - Add an example workflow to docs/examples/ (e.g., read/write and run tests).
-- [x] 021 - Add a stub `--auto` detection flag that reports planned project-type suggestions.
-- [x] 022 - Improve `make help` output to list targets clearly and make `make` show the help menu.
-- [x] 023 - Document `make test-fast` usage in README/docs.
-- [ ] 023 - Document `make test-fast` usage in README/docs.
+- [ ] 007 - Decide and document the container image validation approach (whitelist vs digest pinning vs patterns).
 
 ## Medium Priority
 - [x] 005 - Add troubleshooting for common Ollama issues.
@@ -36,6 +31,8 @@ Maintain zero-padded IDs starting at 001 and do not renumber. Keep only this ind
 - [x] 019 - Document exec container image validation rules and expected errors in docs.
 - [x] 020 - Add an example workflow to docs/examples/ (e.g., read/write and run tests).
 - [x] 021 - Add a stub `--auto` detection flag that reports planned project-type suggestions.
+- [x] 022 - Improve `make help` output to list targets clearly and make `make` show the help menu.
+- [x] 023 - Document `make test-fast` usage in README/docs.
 
 ## Other TODO Files
 - docs/TODO.md
