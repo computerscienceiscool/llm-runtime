@@ -18,6 +18,8 @@ var hints = []projectHint{
 	{marker: "requirements.txt", config: "python-developer.yaml", note: "Python project detected"},
 	{marker: "pyproject.toml", config: "python-developer.yaml", note: "Python project detected"},
 	{marker: "Gemfile", config: "ruby-developer.yaml", note: "Ruby project detected"},
+	{marker: "Cargo.toml", config: "rust-developer.yaml", note: "Rust project detected"},
+	{marker: "Makefile", config: "general-developer.yaml", note: "Makefile present"},
 }
 
 func runAutoDetect() error {
@@ -31,7 +33,7 @@ func runAutoDetect() error {
 		if fileExists(filepath.Join(root, h.marker)) {
 			msg := h.note
 			if h.config != "" {
-				msg += fmt.Sprintf(" → Suggested config: %s", h.config)
+				msg += fmt.Sprintf(" → suggested config: %s", h.config)
 			}
 			found = append(found, msg)
 		}
@@ -47,6 +49,7 @@ func runAutoDetect() error {
 	for _, msg := range found {
 		fmt.Println(" - " + msg)
 	}
+	fmt.Println("\nThis is a preview; apply configs manually for now.")
 
 	return nil
 }

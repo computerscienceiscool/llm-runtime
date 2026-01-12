@@ -189,7 +189,7 @@ In interactive mode, the tool continuously processes input and executes commands
 
 ### Auto Detection (preview)
 
-Use `--auto` to scan the current repo for common markers (`go.mod`, `package.json`, `requirements.txt`) and print suggested configs. This is a preview/stub; it does not change any settings automatically.
+Use `--auto` to scan the current repo for common markers (`go.mod`, `package.json`, `requirements.txt`, `pyproject.toml`, `Gemfile`, `Cargo.toml`, `Makefile`) and print suggested configs. This is a preview/stub; it does not change any settings automatically.
 
 
 ## Repository Isolation
