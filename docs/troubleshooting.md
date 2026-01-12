@@ -144,6 +144,11 @@ docker pull alpine:latest
 
 ## Search Issues
 
+### Ollama Quick Checklist
+- Service up? `curl -sf http://localhost:11434/api/version` (start with `ollama serve` if not)
+- Model present? `ollama list | grep nomic-embed-text` (pull with `ollama pull nomic-embed-text`)
+- URL correct? Ensure `commands.search.ollama_url` points to the right host/port (default `http://localhost:11434`)
+
 ### Ollama Not Running
 
 **Symptoms:**

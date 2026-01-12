@@ -7,10 +7,10 @@ Maintain zero-padded IDs starting at 001 and do not renumber. Keep only this ind
 - [ ] 002 - Update tests referencing the removed `PythonPath` field.
 - [ ] 003 - Fix parser tests expecting mid-line command matching.
 - [ ] 004 - Resolve app test nil pointer issues.
- - [ ] 014 - Define approach for shell exec command injection protections (decide security modes and enforcement for exec whitelist vs shell flexibility; document outcome).
+- [ ] 014 - Define approach for shell exec command injection protections (decide security modes and enforcement for exec whitelist vs shell flexibility; document outcome).
 
 ## Medium Priority
-- [ ] 005 - Add troubleshooting for common Ollama issues.
+- [x] 005 - Add troubleshooting for common Ollama issues.
 - [ ] 006 - Document the config persona system when implemented.
 - [ ] 007 - Decide and document the container image validation approach (whitelist vs digest pinning vs patterns).
 - [ ] 015 - Implement MCP integration (Model Context Protocol) for standardized LLM tool integration; document usage.
