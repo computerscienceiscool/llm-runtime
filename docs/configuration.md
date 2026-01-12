@@ -168,6 +168,7 @@ commands:
 ### `commands.exec.container_image`
 **Default**: `"ubuntu:22.04"`  
 **Description**: Docker image for command execution (set to `python-go` if you need Go/Python preinstalled)  
+**Validation**: Image names must be well-formed (e.g., `alpine:latest`, `ghcr.io/owner/image:tag`) and free of shell metacharacters; otherwise exec fails with `EXEC_IMAGE`.
 ```yaml
 commands:
   exec:

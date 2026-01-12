@@ -331,6 +331,10 @@ Yes, but each `<write>` command modifies one file. For multiple files:
 
 No. Execution is disabled by default; enable it explicitly in config and keep the whitelist tight. Containers remain the security boundary once enabled.
 
+### Why does exec fail with `EXEC_IMAGE`?
+
+The exec container image name must be well-formed (e.g., `ubuntu:22.04`, `ghcr.io/owner/image:tag`) and free of shell metacharacters. Fix the image name or set a valid one in config/flags.
+
 ### How do I allow new commands?
 
 Add to whitelist in `llm-runtime.config.yaml`:

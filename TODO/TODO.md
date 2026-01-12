@@ -9,6 +9,9 @@ Maintain zero-padded IDs starting at 001 and do not renumber. Keep only this ind
 - [ ] 004 - Resolve app test nil pointer issues.
 - [ ] 014 - Define approach for shell exec command injection protections (decide security modes and enforcement for exec whitelist vs shell flexibility; document outcome).
 - [ ] 018 - Speed up test suite (cache modules, reduce Docker-dependent cases, add fast paths/flags).
+- [ ] 019 - Document exec container image validation rules and expected errors in docs.
+- [ ] 020 - Add an example workflow to docs/examples/ (e.g., read/write and run tests).
+- [ ] 021 - Add a stub `--auto` detection flag that reports planned project-type suggestions.
 
 ## Medium Priority
 - [x] 005 - Add troubleshooting for common Ollama issues.

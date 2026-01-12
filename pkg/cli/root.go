@@ -55,6 +55,9 @@ func init() {
 	rootCmd.PersistentFlags().String("io-memory", "256m", "Memory limit for I/O containers")
 	rootCmd.PersistentFlags().Int("io-cpu", 1, "CPU limit for I/O containers")
 
+	// Auto-detect flag (placeholder)
+	rootCmd.PersistentFlags().Bool("auto", false, "Detect project type and suggest config (placeholder)")
+
 	// Bind flags to viper
 	viper.BindPFlags(rootCmd.PersistentFlags())
 }
