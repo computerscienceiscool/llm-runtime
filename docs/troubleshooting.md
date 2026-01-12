@@ -622,6 +622,12 @@ commands:
 
 ## Performance Issues
 
+### Faster Test Iterations
+
+- For quick feedback without Docker-heavy suites, run `make test-fast` (CLI/config/scanner/session) before the full `make test`/`go test ./...`.
+- Warm the Go module cache to avoid timeouts in constrained environments: `GOCACHE=$(pwd)/.gocache go test ./...`.
+- Use minimal exec images (e.g., `ubuntu:22.04` or `alpine`) to reduce pull/start times.
+
 ### Slow Startup Time
 
 **Symptoms:**
