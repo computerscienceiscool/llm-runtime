@@ -1,8 +1,8 @@
 package sandbox
 
 import (
-	"github.com/computerscienceiscool/llm-runtime/pkg/config"
 	"fmt"
+	"github.com/computerscienceiscool/llm-runtime/pkg/config"
 	"strings"
 )
 
@@ -33,20 +33,22 @@ func ValidateExecCommand(command string, whitelist []string) error {
 		return fmt.Errorf("no commands are whitelisted")
 	}
 
-	// Parse command into parts
-	commandParts := strings.Fields(command)
-	if len(commandParts) == 0 {
-		return fmt.Errorf("empty command after parsing")
-	}
+	// Normalize command and whitelist by collapsing whitespace
+	command = strings.Join(strings.Fields(command), " ")
 
-	baseCommand := commandParts[0]
-
-	// Check against whitelist
+	// Check against whitelist using exact match or full-token prefix (next char must be space or end)
 	for _, allowed := range whitelist {
-		if allowed == baseCommand || strings.HasPrefix(command, allowed) {
+		allowedNorm := strings.Join(strings.Fields(allowed), " ")
+		if allowedNorm == "" {
+			continue
+		}
+		if command == allowedNorm {
+			return nil
+		}
+		if strings.HasPrefix(command, allowedNorm+" ") {
 			return nil
 		}
 	}
 
-	return fmt.Errorf("command not in whitelist: %s", baseCommand)
+	return fmt.Errorf("command not in whitelist: %s", command)
 }

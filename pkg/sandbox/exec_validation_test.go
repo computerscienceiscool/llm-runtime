@@ -43,12 +43,6 @@ func TestValidateExecCommand(t *testing.T) {
 			errContains: "empty command",
 		},
 		{
-			name:      "command matches base command in whitelist",
-			command:   "go test ./...",
-			whitelist: []string{"go"},
-			wantErr:   false,
-		},
-		{
 			name:      "command matches exact whitelist entry",
 			command:   "go test",
 			whitelist: []string{"go test"},
@@ -129,10 +123,11 @@ func TestValidateExecCommand(t *testing.T) {
 			wantErr:   false,
 		},
 		{
-			name:      "base command go matches go-test due to HasPrefix",
-			command:   "go-test",
-			whitelist: []string{"go"},
-			wantErr:   false, // HasPrefix("go-test", "go") is true
+			name:        "base command go does not match go-test (tokenized)",
+			command:     "go-test",
+			whitelist:   []string{"go"},
+			wantErr:     true,
+			errContains: "not in whitelist",
 		},
 	}
 
@@ -157,10 +152,11 @@ func TestValidateExecCommand(t *testing.T) {
 
 func TestValidateExecCommand_EdgeCases(t *testing.T) {
 	tests := []struct {
-		name      string
-		command   string
-		whitelist []string
-		wantErr   bool
+		name        string
+		command     string
+		whitelist   []string
+		wantErr     bool
+		errContains string
 	}{
 		{
 			name:      "command with leading whitespace - base command extracted",
@@ -177,7 +173,7 @@ func TestValidateExecCommand_EdgeCases(t *testing.T) {
 		{
 			name:      "command with multiple spaces between args",
 			command:   "go    test",
-			whitelist: []string{"go"},
+			whitelist: []string{"go test"},
 			wantErr:   false,
 		},
 		{
@@ -189,14 +185,15 @@ func TestValidateExecCommand_EdgeCases(t *testing.T) {
 		{
 			name:      "command with tabs",
 			command:   "go\ttest",
-			whitelist: []string{"go"},
+			whitelist: []string{"go test"},
 			wantErr:   false,
 		},
 		{
-			name:      "gotest matches go due to HasPrefix",
-			command:   "gotest",
-			whitelist: []string{"go"},
-			wantErr:   false, // strings.HasPrefix("gotest", "go") is true
+			name:        "gotest does not match go (tokenized)",
+			command:     "gotest",
+			whitelist:   []string{"go"},
+			wantErr:     true,
+			errContains: "not in whitelist",
 		},
 	}
 
@@ -204,10 +201,13 @@ func TestValidateExecCommand_EdgeCases(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			err := ValidateExecCommand(tt.command, tt.whitelist)
 
-			if tt.wantErr && err == nil {
-				t.Error("ValidateExecCommand() expected error, got nil")
-			}
-			if !tt.wantErr && err != nil {
+			if tt.wantErr {
+				if err == nil {
+					t.Error("ValidateExecCommand() expected error, got nil")
+				} else if tt.errContains != "" && !strings.Contains(err.Error(), tt.errContains) {
+					t.Errorf("ValidateExecCommand() error = %v, want error containing %q", err, tt.errContains)
+				}
+			} else if err != nil {
 				t.Errorf("ValidateExecCommand() unexpected error = %v", err)
 			}
 		})
@@ -243,14 +243,14 @@ func TestValidateExecCommand_Issue10_InputValidation(t *testing.T) {
 		{
 			name:        "command too long",
 			command:     strings.Repeat("a", 1001),
-			whitelist:   []string{"a"},
+			whitelist:   []string{strings.Repeat("a", 1001)},
 			wantErr:     true,
 			errContains: "too long",
 		},
 		{
 			name:      "command at max length",
 			command:   strings.Repeat("a", 1000),
-			whitelist: []string{"a"},
+			whitelist: []string{strings.Repeat("a", 1000)},
 			wantErr:   false,
 		},
 		// Test null bytes
@@ -331,19 +331,15 @@ func TestValidateExecCommand_SecurityScenarios(t *testing.T) {
 }
 
 func TestValidateExecCommand_CommandInjectionViaPrefix(t *testing.T) {
-	// Note: The current implementation uses HasPrefix which allows
-	// "go test; rm -rf /" because it starts with "go test"
-	// This documents current behavior - may want to fix in implementation
 	whitelist := []string{"go test"}
 
-	t.Run("command injection via semicolon passes due to HasPrefix", func(t *testing.T) {
-		// This is a known limitation of the current implementation
+	t.Run("command injection via semicolon is blocked", func(t *testing.T) {
 		err := ValidateExecCommand("go test; rm -rf /", whitelist)
-		// Current implementation allows this because HasPrefix matches
-		if err != nil {
-			t.Logf("Implementation correctly blocks injection: %v", err)
-		} else {
-			t.Log("Warning: command injection via semicolon is allowed by current implementation")
+		if err == nil {
+			t.Error("expected injection via semicolon to be blocked")
+		}
+		if !strings.Contains(err.Error(), "not in whitelist") {
+			t.Errorf("expected whitelist error, got %v", err)
 		}
 	})
 }
