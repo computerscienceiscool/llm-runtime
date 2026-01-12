@@ -3,6 +3,7 @@ package sandbox
 import (
 	"fmt"
 	"github.com/computerscienceiscool/llm-runtime/pkg/config"
+	"regexp"
 	"strings"
 )
 
@@ -51,4 +52,25 @@ func ValidateExecCommand(command string, whitelist []string) error {
 	}
 
 	return fmt.Errorf("command not in whitelist: %s", command)
+}
+
+var imageNamePattern = regexp.MustCompile(`^[a-zA-Z0-9._/-]+(:[a-zA-Z0-9._-]+)?$`)
+
+// ValidateContainerImageName ensures the image name is well-formed and free of shell metacharacters
+func ValidateContainerImageName(image string) error {
+	image = strings.TrimSpace(image)
+	if image == "" {
+		return fmt.Errorf("container image cannot be empty")
+	}
+
+	// Disallow obvious injection characters
+	if strings.ContainsAny(image, " ;|&`$\\\"'") {
+		return fmt.Errorf("container image contains invalid characters")
+	}
+
+	if !imageNamePattern.MatchString(image) {
+		return fmt.Errorf("container image is not well-formed")
+	}
+
+	return nil
 }

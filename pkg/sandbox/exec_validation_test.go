@@ -344,6 +344,41 @@ func TestValidateExecCommand_CommandInjectionViaPrefix(t *testing.T) {
 	})
 }
 
+func TestValidateContainerImageName(t *testing.T) {
+	tests := []struct {
+		name      string
+		image     string
+		wantErr   bool
+		errSubstr string
+	}{
+		{"simple name", "ubuntu:22.04", false, ""},
+		{"repo image", "myrepo/custom-image:v1.2.3", false, ""},
+		{"underscore allowed", "python_go:latest", false, ""},
+		{"slash allowed", "ghcr.io/owner/image:tag", false, ""},
+		{"empty", "   ", true, "cannot be empty"},
+		{"whitespace", "ubuntu latest", true, "not well-formed"},
+		{"semicolon injection", "ubuntu:22.04;rm -rf /", true, "invalid characters"},
+		{"backtick injection", "`rm -rf /`", true, "not well-formed"},
+		{"invalid chars", "ubuntu:latest|echo", true, "invalid characters"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := ValidateContainerImageName(tt.image)
+			if tt.wantErr {
+				if err == nil {
+					t.Fatalf("expected error, got nil")
+				}
+				if tt.errSubstr != "" && !strings.Contains(err.Error(), tt.errSubstr) {
+					t.Fatalf("expected error containing %q, got %v", tt.errSubstr, err)
+				}
+			} else if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+		})
+	}
+}
+
 func TestValidateExecCommand_WhitelistVariations(t *testing.T) {
 	t.Run("whitelist with single entry", func(t *testing.T) {
 		err := ValidateExecCommand("go test", []string{"go test"})

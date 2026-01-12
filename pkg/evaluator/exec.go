@@ -28,6 +28,18 @@ func ExecuteExec(cmd scanner.Command, cfg *config.Config, auditLog func(cmdType,
 		return result
 	}
 
+	// Validate image name before pulling/running
+	if err := sandbox.ValidateContainerImageName(cfg.ExecContainerImage); err != nil {
+		result.Success = false
+		fullError := fmt.Errorf("EXEC_IMAGE: %w", err)
+		result.Error = SanitizeError(fullError)
+		result.ExecutionTime = time.Since(startTime)
+		if auditLog != nil {
+			auditLog("exec", cmd.Argument, false, fullError.Error())
+		}
+		return result
+	}
+
 	// Validate command
 	if err := sandbox.ValidateExecCommand(cmd.Argument, cfg.ExecWhitelist); err != nil {
 		result.Success = false
