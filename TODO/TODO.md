@@ -3,9 +3,6 @@
 Maintain zero-padded IDs starting at 001 and do not renumber. Keep only this index file in the TODO folder. Reference items by number in commits/PRs. Move completed items to the DONE section (checked) instead of deleting them. List any sibling TODO files below.
 
 ## High Priority
-- [ ] 001 - Fix test files in `temp_tests/` for new import paths.
-- [ ] 002 - Update tests referencing the removed `PythonPath` field.
-- [ ] 003 - Fix parser tests expecting mid-line command matching.
 - [ ] 004 - Resolve app test nil pointer issues.
 - [ ] 014 - Define approach for shell exec command injection protections (decide security modes and enforcement for exec whitelist vs shell flexibility; document outcome).
 - [ ] 018 - Speed up test suite (cache modules, reduce Docker-dependent cases, add fast paths/flags).
@@ -59,6 +56,9 @@ Maintain zero-padded IDs starting at 001 and do not renumber. Keep only this ind
 - [x] 044 - Add timeout to container cleanup in `pool.Close()`. Changed `context.Background()` to 30-second timeout so pool shutdown doesn't hang on unresponsive Docker.
 - [x] 048 - Add timeout to health check loop context in `pool.go`. Each health check tick now uses a 10-second timeout context instead of unbounded `context.Background()`.
 - [x] 050 - Remove broken `--io-containerized` flag from Makefile `test-io-container` target. The flag was never implemented in the CLI.
+- [x] 001 - Closed as stale. `temp_tests/` directory no longer exists.
+- [x] 002 - Closed as stale. `PythonPath` field was removed; no references remain in codebase.
+- [x] 003 - Closed as stale. All 22 scanner tests pass; mid-line matching was already resolved.
 
 ## Other TODO Files
 - docs/TODO.md
