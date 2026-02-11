@@ -289,7 +289,7 @@ func TestSerializeDeserializeSpecialValues(t *testing.T) {
 }
 
 func TestEmbeddingDimensionsConstant(t *testing.T) {
-	// Verify the constant is set correctly for all-MiniLM-L6-v2
+	// Verify the constant is set correctly for nomic-embed-text
 	if embeddingDimensions != 768 {
 		t.Errorf("expected embeddingDimensions to be 768, got %d", embeddingDimensions)
 	}

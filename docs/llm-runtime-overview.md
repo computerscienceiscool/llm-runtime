@@ -142,7 +142,7 @@ search:
   enabled: true
   database_path: "embeddings.db"
   ollama_url: "http://localhost:11434"
-  ollama_model: "all-MiniLM-L6-v2"  # Set to nomic-embed-text if using Ollama
+  ollama_model: "nomic-embed-text"
   ollama_timeout: 30s
   chunk_size: 1000
   chunk_overlap: 200

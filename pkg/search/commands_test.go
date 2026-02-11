@@ -35,8 +35,8 @@ func TestPrintSearchHelp(t *testing.T) {
 		"--search-cleanup",
 		"Configuration",
 		"Requirements",
-		"Python",
-		"sentence-transformers",
+		"Ollama",
+		"nomic-embed-text",
 	}
 
 	for _, expected := range expectedStrings {
@@ -136,40 +136,36 @@ func TestSearchCommands_Close_Multiple(t *testing.T) {
 	sc.Close()
 }
 
-func TestCheckOllamaSetup_InvalidPath(t *testing.T) {
-	err := CheckOllamaSetup("/nonexistent/python")
+func TestCheckOllamaSetup_InvalidURL(t *testing.T) {
+	err := CheckOllamaSetup("/nonexistent/url")
 	if err == nil {
-		t.Error("expected error for invalid Python path")
+		t.Error("expected error for invalid Ollama URL")
 	}
 }
 
-func TestCheckOllamaSetup_InvalidPython(t *testing.T) {
-	// Try with a command that exists but isn't Python:wq
-
-	// Use /bin/true which outputs nothing (no "OK")
-	err := CheckOllamaSetup("/bin/true")
+func TestCheckOllamaSetup_UnreachableHost(t *testing.T) {
+	err := CheckOllamaSetup("http://localhost:99999")
 	if err == nil {
-		t.Error("expected error for non-Python command")
+		t.Error("expected error for unreachable host")
 	}
 }
 
-func TestCheckOllamaSetup_EmptyPath(t *testing.T) {
+func TestCheckOllamaSetup_EmptyURL(t *testing.T) {
 	err := CheckOllamaSetup("")
 	if err == nil {
-		t.Error("expected error for empty Python path")
+		t.Error("expected error for empty Ollama URL")
 	}
 }
 
-// The following tests require Python with sentence-transformers
-// They test error handling when Python is not available
+// The following tests exercise error handling when Ollama is not available
 
-func TestSearchCommands_Search_NoPython(t *testing.T) {
+func TestSearchCommands_Search_NoOllama(t *testing.T) {
 	tmpDir := t.TempDir()
 
 	cfg := &SearchConfig{
 		Enabled:      true,
 		VectorDBPath: filepath.Join(tmpDir, "test.db"),
-		OllamaURL:   "/nonexistent/python",
+		OllamaURL:   "http://localhost:99999",
 		MaxResults:   10,
 	}
 
@@ -179,10 +175,10 @@ func TestSearchCommands_Search_NoPython(t *testing.T) {
 	}
 	defer sc.Close()
 
-	// Search should fail due to Python not available
+	// Search should fail due to Ollama not available
 	_, err = sc.Search("test query")
 	if err == nil {
-		t.Error("expected error when Python is not available")
+		t.Error("expected error when Ollama is not available")
 	}
 }
 
@@ -321,7 +317,7 @@ func TestSearchCommands_InitializeSearchIndex_EmptyRepo(t *testing.T) {
 	cfg := &SearchConfig{
 		Enabled:      true,
 		VectorDBPath: filepath.Join(tmpDir, "test.db"),
-		OllamaURL:   "/nonexistent/python", // Will fail to index
+		OllamaURL:   "http://localhost:99999", // Will fail to index
 	}
 
 	sc, err := NewSearchCommands(cfg, tmpDir)
@@ -330,7 +326,7 @@ func TestSearchCommands_InitializeSearchIndex_EmptyRepo(t *testing.T) {
 	}
 	defer sc.Close()
 
-	// With empty repo, should try to build index (may fail due to Python)
+	// With empty repo, should try to build index (may fail due to Ollama)
 	// But should not panic
 	sc.InitializeSearchIndex([]string{}, false)
 }
@@ -435,16 +431,16 @@ func TestSearchCommands_EngineAccessors(t *testing.T) {
 	}
 }
 
-// Tests for HandleReindex and HandleSearchUpdate would require Python
-// Skip them or test error paths
+// Tests for HandleReindex and HandleSearchUpdate require Ollama
+// Test error paths when Ollama is unreachable
 
-func TestSearchCommands_HandleReindex_NoPython(t *testing.T) {
+func TestSearchCommands_HandleReindex_NoOllama(t *testing.T) {
 	tmpDir := t.TempDir()
 
 	cfg := &SearchConfig{
 		Enabled:      true,
 		VectorDBPath: filepath.Join(tmpDir, "test.db"),
-		OllamaURL:   "/nonexistent/python",
+		OllamaURL:   "http://localhost:99999",
 	}
 
 	sc, err := NewSearchCommands(cfg, tmpDir)
@@ -459,19 +455,19 @@ func TestSearchCommands_HandleReindex_NoPython(t *testing.T) {
 		t.Fatalf("failed to create test file: %v", err)
 	}
 
-	// Reindex should fail due to Python
+	// Reindex should fail due to Ollama not available
 	err = sc.HandleReindex([]string{}, false)
 	// May or may not error depending on implementation
 	t.Logf("HandleReindex result: %v", err)
 }
 
-func TestSearchCommands_HandleSearchUpdate_NoPython(t *testing.T) {
+func TestSearchCommands_HandleSearchUpdate_NoOllama(t *testing.T) {
 	tmpDir := t.TempDir()
 
 	cfg := &SearchConfig{
 		Enabled:      true,
 		VectorDBPath: filepath.Join(tmpDir, "test.db"),
-		OllamaURL:   "/nonexistent/python",
+		OllamaURL:   "http://localhost:99999",
 	}
 
 	sc, err := NewSearchCommands(cfg, tmpDir)
@@ -480,7 +476,7 @@ func TestSearchCommands_HandleSearchUpdate_NoPython(t *testing.T) {
 	}
 	defer sc.Close()
 
-	// Update should attempt to run but may fail due to Python
+	// Update should attempt to run but may fail due to Ollama not available
 	err = sc.HandleSearchUpdate([]string{})
 	// May or may not error depending on implementation
 	t.Logf("HandleSearchUpdate result: %v", err)

@@ -14,7 +14,7 @@ cat <<'YAML' > llm-runtime.config.yaml
 commands:
   search:
     enabled: true
-    embedding_model: "all-MiniLM-L6-v2"   # default
+    embedding_model: "nomic-embed-text"
     ollama_url: "http://localhost:11434"  # if using Ollama
 YAML
 ```

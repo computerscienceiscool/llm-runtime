@@ -21,7 +21,7 @@ func TestGetDefaultSearchConfig(t *testing.T) {
 	}{
 		{"Enabled", cfg.Enabled, false},
 		{"VectorDBPath", cfg.VectorDBPath, "./embeddings.db"},
-		{"EmbeddingModel", cfg.EmbeddingModel, "all-MiniLM-L6-v2"},
+		{"EmbeddingModel", cfg.EmbeddingModel, "nomic-embed-text"},
 		{"EmbeddingDimensions", cfg.EmbeddingDimensions, DefaultEmbeddingDims},
 		{"MaxResults", cfg.MaxResults, DefaultMaxSearchResults},
 		{"MinSimilarityScore", cfg.MinSimilarityScore, DefaultMinSimilarity},

@@ -1,7 +1,7 @@
 package search
 
 import (
-	"os/exec"
+	"net/http"
 	"strings"
 	"testing"
 )
@@ -42,7 +42,7 @@ func TestGenerateEmbedding_EmptyText(t *testing.T) {
 func TestGenerateEmbedding_InvalidOllamaURL(t *testing.T) {
 	_, err := generateEmbedding("http://localhost:99999", "test text", "nomic-embed-text")
 	if err == nil {
-		t.Error("expected error for invalid python path, got nil")
+		t.Error("expected error for invalid Ollama URL, got nil")
 	}
 
 	if !strings.Contains(err.Error(), "Ollama API") {
@@ -51,9 +51,8 @@ func TestGenerateEmbedding_InvalidOllamaURL(t *testing.T) {
 }
 
 func TestGenerateEmbedding_ValidText(t *testing.T) {
-	// Skip if Python or sentence-transformers not available
-	if !pythonAvailable(t) {
-		t.Skip("Python with sentence-transformers not available")
+	if !ollamaAvailable(t) {
+		t.Skip("Ollama not available")
 	}
 
 	result, err := generateEmbedding("http://localhost:11434", "Hello world", "nomic-embed-text")
@@ -79,9 +78,8 @@ func TestGenerateEmbedding_ValidText(t *testing.T) {
 }
 
 func TestGenerateEmbedding_DifferentTextsDifferentEmbeddings(t *testing.T) {
-	// Skip if Python or sentence-transformers not available
-	if !pythonAvailable(t) {
-		t.Skip("Python with sentence-transformers not available")
+	if !ollamaAvailable(t) {
+		t.Skip("Ollama not available")
 	}
 
 	embedding1, err := generateEmbedding("http://localhost:11434", "The cat sat on the mat", "nomic-embed-text")
@@ -108,9 +106,8 @@ func TestGenerateEmbedding_DifferentTextsDifferentEmbeddings(t *testing.T) {
 }
 
 func TestGenerateEmbedding_SimilarTextsCloseEmbeddings(t *testing.T) {
-	// Skip if Python or sentence-transformers not available
-	if !pythonAvailable(t) {
-		t.Skip("Python with sentence-transformers not available")
+	if !ollamaAvailable(t) {
+		t.Skip("Ollama not available")
 	}
 
 	embedding1, err := generateEmbedding("http://localhost:11434", "The dog is happy", "nomic-embed-text")
@@ -133,9 +130,8 @@ func TestGenerateEmbedding_SimilarTextsCloseEmbeddings(t *testing.T) {
 }
 
 func TestGenerateEmbedding_NormalizedOutput(t *testing.T) {
-	// Skip if Python or sentence-transformers not available
-	if !pythonAvailable(t) {
-		t.Skip("Python with sentence-transformers not available")
+	if !ollamaAvailable(t) {
+		t.Skip("Ollama not available")
 	}
 
 	result, err := generateEmbedding("http://localhost:11434", "Test normalization", "nomic-embed-text")
@@ -157,9 +153,8 @@ func TestGenerateEmbedding_NormalizedOutput(t *testing.T) {
 }
 
 func TestGenerateEmbedding_SpecialCharacters(t *testing.T) {
-	// Skip if Python or sentence-transformers not available
-	if !pythonAvailable(t) {
-		t.Skip("Python with sentence-transformers not available")
+	if !ollamaAvailable(t) {
+		t.Skip("Ollama not available")
 	}
 
 	tests := []struct {
@@ -188,9 +183,8 @@ func TestGenerateEmbedding_SpecialCharacters(t *testing.T) {
 }
 
 func TestGenerateEmbedding_LongText(t *testing.T) {
-	// Skip if Python or sentence-transformers not available
-	if !pythonAvailable(t) {
-		t.Skip("Python with sentence-transformers not available")
+	if !ollamaAvailable(t) {
+		t.Skip("Ollama not available")
 	}
 
 	// Generate a long text
@@ -206,13 +200,16 @@ func TestGenerateEmbedding_LongText(t *testing.T) {
 	}
 }
 
-// Helper function to check if Python with sentence-transformers is available
-func pythonAvailable(t *testing.T) bool {
+// ollamaAvailable checks if Ollama is reachable at localhost:11434
+func ollamaAvailable(t *testing.T) bool {
 	t.Helper()
 
-	cmd := exec.Command("http://localhost:11434", "-c", "from sentence_transformers import SentenceTransformer")
-	err := cmd.Run()
-	return err == nil
+	resp, err := http.Get("http://localhost:11434/api/tags")
+	if err != nil {
+		return false
+	}
+	resp.Body.Close()
+	return resp.StatusCode == http.StatusOK
 }
 
 // TestTruncateText tests the truncateText function

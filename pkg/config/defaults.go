@@ -10,7 +10,7 @@ func getDefaultSearchConfig() *search.SearchConfig {
 	return &search.SearchConfig{
 		Enabled:             false,
 		VectorDBPath:        "./embeddings.db",
-		EmbeddingModel:      "all-MiniLM-L6-v2",
+		EmbeddingModel:      "nomic-embed-text",
 		EmbeddingDimensions: DefaultEmbeddingDims,
 		MaxResults:          DefaultMaxSearchResults,
 		MinSimilarityScore:  DefaultMinSimilarity,
@@ -52,7 +52,7 @@ func SetViperDefaults() {
 	// Command defaults - Search
 	viper.SetDefault("commands.search.enabled", false)
 	viper.SetDefault("commands.search.vector_db_path", "./embeddings.db")
-	viper.SetDefault("commands.search.embedding_model", "all-MiniLM-L6-v2")
+	viper.SetDefault("commands.search.embedding_model", "nomic-embed-text")
 	viper.SetDefault("commands.search.embedding_dimensions", DefaultEmbeddingDims)
 	viper.SetDefault("commands.search.max_results", DefaultMaxSearchResults)
 	viper.SetDefault("commands.search.min_similarity_score", DefaultMinSimilarity)

@@ -96,8 +96,8 @@ commands:
     # Database path for storing embeddings
     vector_db_path: "./embeddings.db"
     
-    # Embedding model to use (sentence-transformers model)
-    embedding_model: "all-MiniLM-L6-v2"
+    # Embedding model to use (Ollama model)
+    embedding_model: "nomic-embed-text"
     
     # Maximum number of search results to return
     max_results: 10
@@ -178,8 +178,9 @@ logging:
 
 # Search Setup Instructions:
 #
-# 1. Install Python dependencies:
-#    pip install sentence-transformers
+# 1. Install Ollama and pull the embedding model:
+#    curl -fsSL https://ollama.com/install.sh | sh
+#    ollama pull nomic-embed-text
 #
 # 2. Enable search by setting search.enabled: true above
 #

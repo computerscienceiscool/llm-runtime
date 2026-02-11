@@ -423,11 +423,11 @@ func TestSearchEngine_RelativeDBPath(t *testing.T) {
 	}
 }
 
-// Skip tests that require Python/sentence-transformers
+// Skip tests that require Ollama
 // These would need integration test setup
 
-func TestSearchEngine_Search_NoPython(t *testing.T) {
-	t.Skip("Search tests require Python with sentence-transformers installed")
+func TestSearchEngine_Search_NoOllama(t *testing.T) {
+	t.Skip("Search tests require Ollama running locally")
 }
 
 // Benchmark tests

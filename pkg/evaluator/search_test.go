@@ -146,12 +146,12 @@ func TestExecuteSearch_EmptyQuery(t *testing.T) {
 		VectorDBPath:       filepath.Join(tmpDir, "test.db"),
 		MaxResults:         10,
 		MinSimilarityScore: 0.5,
-		OllamaURL:          "/nonexistent/python", // Will fail at search, not init
+		OllamaURL:          "http://localhost:99999", // Will fail at search, not init
 	}
 
 	result := ExecuteSearch("", cfg, searchCfg, nil, nil)
 
-	// Empty query should still attempt to search (and fail due to Python)
+	// Empty query should still attempt to search (and fail due to Ollama)
 	t.Logf("Empty query result: success=%v, error=%v", result.Success, result.Error)
 }
 
@@ -174,14 +174,14 @@ func TestExecuteSearch_WithValidDB(t *testing.T) {
 		MaxResults:         10,
 		MinSimilarityScore: 0.5,
 		MaxPreviewLength:   100,
-		OllamaURL:          "/nonexistent/python", // Will fail at Python check
+		OllamaURL:          "http://localhost:99999", // Will fail at Ollama check
 	}
 
 	result := ExecuteSearch("test query", cfg, searchCfg, nil, nil)
 
-	// Should fail at Python check, not database init
+	// Should fail at Ollama check, not database init
 	if result.Success {
-		t.Error("expected failure (Python not available)")
+		t.Error("expected failure (Ollama not available)")
 	}
 
 	// Should be SEARCH_FAILED, not SEARCH_INIT_FAILED

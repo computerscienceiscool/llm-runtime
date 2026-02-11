@@ -31,7 +31,7 @@ You can embed the following commands in your responses, and they will be execute
 
 4. **Semantic search**: `<search query>`
    - Use this to find files related to specific concepts or functionality
-   - Powered by local embeddings (default: all-MiniLM-L6-v2; set to Ollama `nomic-embed-text` if using Ollama)
+   - Powered by local embeddings via Ollama (default model: `nomic-embed-text`)
    - Understands meaning, not just keywords
    - Example: `<search user authentication logic>` or `<search database queries>`
 
@@ -62,7 +62,7 @@ All operations execute in isolated Docker containers:
 - System: `ls`, `cat`, `grep`, `find`, `head`, `tail`, `wc`
 
 **Search Configuration:**
-- Default embedding model: `all-MiniLM-L6-v2`; for Ollama set `nomic-embed-text`
+- Default embedding model: `nomic-embed-text` (requires Ollama)
 - All processing happens locally on your machine
 - Index stored in SQLite database (`embeddings.db`)
 - Requires initial indexing: `./llm-runtime --reindex`

@@ -281,7 +281,7 @@ io_cpu_limit: 1
 
 ## Search Command Configuration
 
-Search uses embeddings for similarity; the default model is `all-MiniLM-L6-v2`. If you use [Ollama](https://ollama.com), set `embedding_model` to `nomic-embed-text` and pull that model.
+Search uses embeddings for similarity via [Ollama](https://ollama.com). The default model is `nomic-embed-text`. Run `ollama pull nomic-embed-text` before using search.
 
 ### `commands.search.enabled`
 **Default**: `false`  

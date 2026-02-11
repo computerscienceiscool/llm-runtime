@@ -102,8 +102,8 @@ Configuration:
   Search settings can be configured in .llm-runtime.yaml under the 'search' section.
   
 Requirements:
-  - Python 3 with sentence-transformers package
-  - Run: pip install sentence-transformers`)
+  - Ollama running locally (https://ollama.com)
+  - Run: ollama pull nomic-embed-text`)
 }
 
 // InitializeSearchIndex creates initial index if needed

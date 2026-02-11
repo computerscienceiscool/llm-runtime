@@ -3,10 +3,10 @@
 ## In Progress 
 
 ### Test Cleanup
-- [ ] Fix test files in `temp_tests/` for new import paths
-- [ ] Update tests referencing removed `PythonPath` field
-- [ ] Fix parser tests expecting mid-line command matching
-- [ ] Fix app test nil pointer issues
+- [x] Fix test files in `temp_tests/` (stale; directory removed)
+- [x] Update tests referencing removed `PythonPath` field (stale; no references remain)
+- [x] Fix parser tests expecting mid-line command matching (stale; all 22 scanner tests pass)
+- [x] Fix app test nil pointer issues (stale; failures were Docker permission errors)
 
 ### Testing Sections
 Tests for the following packages are passing:

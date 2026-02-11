@@ -683,7 +683,7 @@ commands:
   search:
     enabled: false  # Set to true to enable
     ollama_url: "http://localhost:11434"
-    embedding_model: "all-MiniLM-L6-v2"  # Default; set to nomic-embed-text for Ollama
+    embedding_model: "nomic-embed-text"
     max_results: 10
 
 # Container pool (optional - for I/O operations only)
@@ -706,7 +706,7 @@ security:
 
 ### Requirements
 - Ollama installed and running (if using Ollama-backed embeddings)
-- Embedding model (default: `all-MiniLM-L6-v2`; for Ollama use `nomic-embed-text`)
+- Embedding model (default: `nomic-embed-text`, requires Ollama)
 
 ### Installation Steps
 

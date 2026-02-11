@@ -102,7 +102,7 @@ commands:
   search:
     enabled: true
     vector_db_path: "./embeddings.db"
-    embedding_model: "all-MiniLM-L6-v2"
+    embedding_model: "nomic-embed-text"
     max_results: 10
     min_similarity_score: 0.3
     max_preview_length: 100
