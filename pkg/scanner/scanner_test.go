@@ -2,6 +2,7 @@ package scanner
 
 import (
 	"bufio"
+	"fmt"
 	"strings"
 	"testing"
 )
@@ -497,6 +498,51 @@ func TestScan_ShowPrompts(t *testing.T) {
 	if cmd.Type != "open" || cmd.Argument != "test.go" {
 		t.Errorf("Command not parsed correctly with showPrompts=true")
 	}
+}
+
+// TestScan_ErrReturnsNilOnEOF tests that Err() is nil after normal EOF
+func TestScan_ErrReturnsNilOnEOF(t *testing.T) {
+	input := "<open file.go>\n"
+	reader := bufio.NewReader(strings.NewReader(input))
+	sc := NewScanner(reader, false)
+
+	cmd := sc.Scan()
+	if cmd == nil {
+		t.Fatal("expected a command")
+	}
+
+	// Drain remaining (EOF)
+	cmd = sc.Scan()
+	if cmd != nil {
+		t.Fatalf("expected nil, got %+v", cmd)
+	}
+
+	if sc.Err() != nil {
+		t.Errorf("Err() should be nil after clean EOF, got %v", sc.Err())
+	}
+}
+
+// TestScan_ErrReturnsReadError tests that Err() captures non-EOF errors
+func TestScan_ErrReturnsReadError(t *testing.T) {
+	// errReader always returns an error
+	r := bufio.NewReader(&errReader{})
+	sc := NewScanner(r, false)
+
+	cmd := sc.Scan()
+	if cmd != nil {
+		t.Fatalf("expected nil, got %+v", cmd)
+	}
+
+	if sc.Err() == nil {
+		t.Error("Err() should be non-nil after read error")
+	}
+}
+
+// errReader is a reader that always returns an error
+type errReader struct{}
+
+func (e *errReader) Read(p []byte) (int, error) {
+	return 0, fmt.Errorf("disk read error")
 }
 
 // Benchmark tests

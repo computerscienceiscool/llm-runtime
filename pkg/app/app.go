@@ -71,6 +71,9 @@ func (a *App) scanInput(exec *evaluator.Executor, startTime time.Time, showPromp
 	for {
 		cmd := sc.Scan()
 		if cmd == nil {
+			if err := sc.Err(); err != nil {
+				fmt.Fprintf(os.Stderr, "Scanner error: %v\n", err)
+			}
 			break
 		}
 

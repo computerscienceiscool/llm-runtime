@@ -1,9 +1,11 @@
 package scanner
 
 import (
-	"github.com/computerscienceiscool/llm-runtime/pkg/config"
 	"bufio"
+	"io"
 	"strings"
+
+	"github.com/computerscienceiscool/llm-runtime/pkg/config"
 )
 
 // Maximum buffer size to prevent memory exhaustion attacks
@@ -57,6 +59,7 @@ type Scanner struct {
 	currentCmd  *Command
 	reader      *bufio.Reader
 	showPrompts bool
+	lastErr     error
 }
 
 // checkBufferLimit returns true if buffer is within limits
@@ -92,13 +95,21 @@ func (s *Scanner) startCommand(cmdType string) {
 	s.buffer.Reset()
 }
 
+// Err returns the first non-EOF error encountered during scanning.
+// It should be checked after Scan returns nil.
+func (s *Scanner) Err() error {
+	return s.lastErr
+}
+
 // Scan reads input and returns the next complete command
 // Returns nil when EOF or no command found
 func (s *Scanner) Scan() *Command {
 	for {
 		line, err := s.reader.ReadString('\n')
 		if err != nil {
-			// EOF - return any incomplete write command as nil
+			if err != io.EOF {
+				s.lastErr = err
+			}
 			if line == "" {
 				return nil
 			}

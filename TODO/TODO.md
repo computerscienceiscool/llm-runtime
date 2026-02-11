@@ -6,7 +6,6 @@ Maintain zero-padded IDs starting at 001 and do not renumber. Keep only this ind
 - [ ] 004 - Resolve app test nil pointer issues.
 - [ ] 014 - Define approach for shell exec command injection protections (decide security modes and enforcement for exec whitelist vs shell flexibility; document outcome).
 - [ ] 018 - Speed up test suite (cache modules, reduce Docker-dependent cases, add fast paths/flags).
-- [ ] 028 - Fix scanner silently ignoring non-EOF read errors. `scanner.go:99-105` treats all errors the same as EOF when there is remaining line data -- disk errors, permission errors, etc. are swallowed.
 
 ## Medium Priority
 - [ ] 006 - Document the config persona system when implemented.
@@ -21,7 +20,6 @@ Maintain zero-padded IDs starting at 001 and do not renumber. Keep only this ind
 - [ ] 036 - Add scanner timeout / context support. `Scanner.Scan()` blocks indefinitely on `ReadString('\n')` with no way to cancel.
 - [ ] 037 - Scanner processes input byte-by-byte (`scanner.go:108`), which may split multi-byte UTF-8 characters. Consider rune-based iteration for correctness with non-ASCII content.
 - [ ] 038 - Add concurrent audit log tests. `session.LogAudit` has no synchronization; multiple goroutines writing to the same logger can interleave entries.
-- [ ] 047 - Fix race condition in container pool `Return()` method (`sandbox/pool.go:176-228`). Check-then-act on `p.closed` without holding the lock; pool can close between check and container return.
 - [ ] 051 - Wire `ExecNetworkEnabled` config flag to container creation or document that network is always disabled. Currently all container code hardcodes `NetworkMode: "none"`. Config default corrected to `false` in `llm-runtime.config.yaml`.
 
 ## DONE
@@ -59,6 +57,8 @@ Maintain zero-padded IDs starting at 001 and do not renumber. Keep only this ind
 - [x] 001 - Closed as stale. `temp_tests/` directory no longer exists.
 - [x] 002 - Closed as stale. `PythonPath` field was removed; no references remain in codebase.
 - [x] 003 - Closed as stale. All 22 scanner tests pass; mid-line matching was already resolved.
+- [x] 028 - Add `Err()` method to Scanner (bufio.Scanner pattern). Non-EOF read errors are now stored and retrievable after `Scan()` returns nil. Caller in `app.go` updated to check and log.
+- [x] 047 - Fix race condition in pool `Return()`. Hold write lock across closed check and channel send so `Close()` cannot close the channel between them. Removed dead `ctx.Done()` select case.
 
 ## Other TODO Files
 - docs/TODO.md

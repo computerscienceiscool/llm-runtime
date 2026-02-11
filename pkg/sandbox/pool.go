@@ -178,22 +178,24 @@ func (p *ContainerPool) Return(ctx context.Context, container *PooledContainer) 
 		return fmt.Errorf("cannot return nil container")
 	}
 
-	p.mu.RLock()
-	if p.closed {
-		p.mu.RUnlock()
-		// Pool is closed, destroy the container
-		return p.destroyContainer(ctx, container)
-	}
-	p.mu.RUnlock()
-
 	container.mu.Lock()
 	container.InUse = false
 
 	// Check if container should be recycled
 	shouldRecycle := container.UsageCount >= container.MaxUses || !container.Healthy
+	container.mu.Unlock()
+
+	// Hold write lock to prevent Close() from closing the channel between
+	// our closed check and the channel send.
+	p.mu.Lock()
+	if p.closed {
+		p.mu.Unlock()
+		return p.destroyContainer(ctx, container)
+	}
 
 	if shouldRecycle {
-		container.mu.Unlock()
+		p.mu.Unlock()
+
 		// Remove from pool and destroy
 		p.removeContainer(container)
 		if err := p.destroyContainer(ctx, container); err != nil {
@@ -207,23 +209,24 @@ func (p *ContainerPool) Return(ctx context.Context, container *PooledContainer) 
 		}
 
 		p.mu.Lock()
+		if p.closed {
+			p.mu.Unlock()
+			return p.destroyContainer(ctx, newContainer)
+		}
 		p.containers = append(p.containers, newContainer)
+		p.available <- newContainer
 		p.mu.Unlock()
 
-		p.available <- newContainer
 		return nil
 	}
 
-	container.mu.Unlock()
-
-	// Return to available pool
+	// Return to available pool (under lock so channel cannot be closed)
 	select {
 	case p.available <- container:
+		p.mu.Unlock()
 		return nil
-	case <-ctx.Done():
-		return fmt.Errorf("context canceled while returning container")
 	default:
-		// Channel full (shouldn't happen but handle it)
+		p.mu.Unlock()
 		return fmt.Errorf("failed to return container to pool: channel full")
 	}
 }
