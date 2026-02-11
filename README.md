@@ -257,7 +257,7 @@ KEEP_TEST_REPOS=true ./llm-runtime
 
 ### I/O Container Options
 - `--io-image IMAGE`: Docker image for I/O operations (default: llm-runtime-io:latest)
-- `--io-timeout DURATION`: Timeout for I/O operations (default: 60s)
+- `--io-timeout DURATION`: Timeout for I/O operations (default: 30s)
 - `--io-memory LIMIT`: Memory limit for I/O containers (default: 256m)
 - `--io-cpu LIMIT`: CPU limit for I/O containers (default: 1)
 
@@ -457,7 +457,7 @@ The I/O container is minimal and built from source:
 
 ```dockerfile
 # Dockerfile.io
-FROM golang:1.22.2-alpine
+FROM alpine:3.21
 
 # Create non-root user
 RUN addgroup -g 1000 llmuser && \
@@ -664,7 +664,7 @@ commands:
     timeout_seconds: 30
     memory_limit: "512m"
     cpu_limit: 2
-    network_enabled: false  # Keep disabled for security
+    # Network is always disabled (hardcoded NetworkMode: "none").
     whitelist:
       - "go test"
       - "go build"
@@ -860,7 +860,7 @@ Planned features for future versions:
 2. Add tests for new features
 3. Update documentation
 4. For a quick sanity check without Docker-heavy suites, use `make test-fast`; for full coverage, use `make test` or `go test ./...`.
-4. Follow Go best practices
+5. Follow Go best practices
 5. Test with Docker security in mind
 
 ## License

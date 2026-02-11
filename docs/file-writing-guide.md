@@ -307,7 +307,7 @@ docker run \
 - **No network access**: Container completely isolated
 - **Limited write access**: Can only write to repository directory
 - **Minimal image**: Alpine Linux (~5MB) reduces attack surface
-- **Resource limits**: 128MB RAM, 1 CPU core, 10-second timeout
+- **Resource limits**: 256MB RAM, 1 CPU core, 30-second timeout
 - **Non-root user**: Runs as unprivileged user (1000:1000)
 - **No new privileges**: Cannot escalate permissions
 - **Atomic writes**: Temp file + rename prevents partial writes
@@ -375,7 +375,7 @@ docker run \
 ...gigabytes of content...
 </write>
 ```
-**Cause**: Write operation exceeded timeout (default: 10 seconds)
+**Cause**: Write operation exceeded timeout (default: 30 seconds)
 **Solution**: Increase timeout or split into smaller writes
 
 ## Configuration
@@ -394,8 +394,8 @@ commands:
   io:
     # I/O containerization settings for read/write operations
     container_image: "llm-runtime-io:latest"
-    timeout_seconds: 10
-    memory_limit: "128m"
+    timeout_seconds: 30
+    memory_limit: "256m"
     cpu_limit: 1
     fallback_image: "alpine:latest"
 ```

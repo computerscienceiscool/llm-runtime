@@ -70,14 +70,14 @@ llm-runtime is designed as a secure bridge between Large Language Models and cod
 
 ## Component Details
 
-### 1. Command Parser
+### 1. Command Scanner
 
-**Location:** `pkg/parser/`
+**Location:** `pkg/scanner/`
 
 **Responsibilities:**
-- Extract commands from LLM text output
-- Validate command syntax
-- Route to appropriate handlers
+- Extract commands from LLM text output using a state machine
+- Parse multi-line commands (e.g., `<write>...</write>`)
+- Route parsed commands to evaluators
 
 **Supported Patterns:**
 ```
@@ -88,18 +88,25 @@ llm-runtime is designed as a secure bridge between Large Language Models and cod
 ```
 
 **Implementation:**
+The scanner uses a state machine (not regex) because commands like `<write>...</write>` require context-sensitive parsing across line boundaries.
+
 ```go
-type Parser struct {
-    patterns map[string]*regexp.Regexp
+type Scanner struct {
+    reader  *bufio.Reader
+    state   int
+    buffer  strings.Builder
+    lastErr error
 }
 
-func (p *Parser) Parse(input string) ([]Command, error)
-func (p *Parser) ValidateSyntax(cmd Command) error
+func (s *Scanner) Scan() *Command
+func (s *Scanner) Err() error
 ```
+
+**States:** `StateScanning`, `StateTagOpen`, `StateOpen`, `StateWrite`, `StateWriteBody`, `StateExec`, `StateExecBody`, `StateSearch`
 
 ### 2. I/O Handler (Read/Write)
 
-**Location:** `pkg/io/`
+**Location:** `pkg/evaluator/` (open.go, write.go) and `pkg/sandbox/` (io_container.go)
 
 **Phase 5 Implementation - Containerized I/O:**
 
@@ -155,11 +162,11 @@ func (h *WriteHandler) Write(path string, content []byte) error {
 - Container isolation
 - Read-only repository mounts (for reads)
 - Atomic operations (for writes)
-- Resource limits (128MB RAM, 1 CPU, 10s timeout)
+- Resource limits (256MB RAM, 1 CPU, 30s timeout)
 
 ### 3. Exec Handler
 
-**Location:** `pkg/exec/`
+**Location:** `pkg/evaluator/` (exec.go) and `pkg/sandbox/` (container.go)
 
 **Implementation:**
 ```go
@@ -465,10 +472,9 @@ TIMESTAMP|SESSION_ID|OPERATION|TARGET|STATUS|METADATA
 commands:
   io:
     container_image: "llm-runtime-io:latest"
-    timeout_seconds: 10
-    memory_limit: "128m"
+    timeout_seconds: 30
+    memory_limit: "256m"
     cpu_limit: 1
-    fallback_image: "alpine:latest"
 ```
 
 ### Phase 6: Future Enhancements 🔮
@@ -595,9 +601,9 @@ Layer 2: Container Isolation
   └─ No privilege escalation
 
 Layer 3: Resource Limits
-  ├─ Memory caps (128MB-512MB)
+  ├─ Memory caps (256MB-512MB)
   ├─ CPU limits (1-2 cores)
-  ├─ Execution timeouts (10s-30s)
+  ├─ Execution timeouts (30s)
   └─ Storage quotas
 
 Layer 4: Audit & Monitoring
@@ -753,8 +759,8 @@ commands:
   
   io:
     container_image: "llm-runtime-io:latest"
-    timeout_seconds: 10
-    memory_limit: "128m"
+    timeout_seconds: 30
+    memory_limit: "256m"
     cpu_limit: 1
 ```
 

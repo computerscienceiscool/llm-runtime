@@ -155,7 +155,7 @@ commands:
     timeout_seconds: 30
     memory_limit: "512m"
     cpu_limit: 2
-    network_enabled: false
+    # Network is always disabled (hardcoded NetworkMode: "none").
     whitelist:
       - "go test"
       - "go build"
@@ -186,10 +186,9 @@ commands:
   # I/O containerization
   io:
     container_image: "llm-runtime-io:latest"
-    timeout_seconds: 10
-    memory_limit: "128m"
+    timeout_seconds: 30
+    memory_limit: "256m"
     cpu_limit: 1
-    fallback_image: "alpine:latest"
 ```
 
 ## Docker Setup
@@ -595,7 +594,7 @@ echo "<exec go build .>" | ./llm-runtime
 
 ### Defaults
 - **Exec container**: 512MB RAM, 2 CPUs, 30s timeout
-- **I/O container**: 128MB RAM, 1 CPU, 10s timeout
+- **I/O container**: 256MB RAM, 1 CPU, 30s timeout
 - **Search**: No specific limits (uses Ollama resources)
 
 ### Customization

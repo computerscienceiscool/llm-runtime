@@ -290,7 +290,7 @@ Path validation protects:
 
 **Practical limits:**
 - Read operations: ~10MB (beyond this, LLM context limits apply)
-- Write operations: Limited by timeout (default: 10s)
+- Write operations: Limited by timeout (default: 30s)
 
 **For large files:**
 ```bash

@@ -255,8 +255,8 @@ io_container_image: "alpine:latest"
 ```
 
 ### `io_timeout`
-**Default**: `"60s"`  
-**Description**: Timeout for I/O operations  
+**Default**: `"30s"`
+**Description**: Timeout for I/O operations
 ```yaml
 io_timeout: "120s"  # 2 minutes
 ```
