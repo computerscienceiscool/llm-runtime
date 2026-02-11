@@ -158,8 +158,10 @@ func ExecuteWrite(filePath, content string, cfg *config.Config, auditLog func(cm
 	}
 
 	// Write file using container
+	ctx, cancel := context.WithTimeout(context.Background(), cfg.IOTimeout)
+	defer cancel()
 	err = sandbox.WriteFileInContainerPooled(
-		context.Background(),
+		ctx,
 		pool,
 		safePath,
 		formattedContent,

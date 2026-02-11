@@ -270,7 +270,9 @@ func (p *ContainerPool) createContainer(ctx context.Context) (*PooledContainer, 
 	}
 
 	if err := p.client.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{}); err != nil {
-		p.client.ContainerRemove(ctx, resp.ID, types.ContainerRemoveOptions{Force: true})
+		if removeErr := p.client.ContainerRemove(ctx, resp.ID, types.ContainerRemoveOptions{Force: true}); removeErr != nil {
+			return nil, fmt.Errorf("failed to start container: %w (cleanup also failed: %v)", err, removeErr)
+		}
 		return nil, fmt.Errorf("failed to start container: %w", err)
 	}
 

@@ -15,7 +15,6 @@ const (
 
 	// Container resource limits
 	DefaultContainerMemory = "512m" // Memory limit per container
-	DefaultContainerCPUs   = "1.0"  // CPU limit per container
 
 	// Search configuration
 	DefaultMaxSearchResults = 10  // Maximum number of search results to return
@@ -26,19 +25,11 @@ const (
 	MaxCommandLength = 1000 // Maximum length for exec commands
 	MaxPathLength    = 4096 // Maximum path length
 
-	// Backup configuration
-	BackupExtension = ".bak" // Extension for backup files
-	MaxBackups      = 5      // Maximum number of backups to keep per file
-
 	// Audit log configuration
 	DefaultAuditLogPath = "audit.log"
-	AuditLogMaxSize     = 100 // MB
-	AuditLogMaxBackups  = 5
-	AuditLogMaxAge      = 30 // days
 
 	// Session configuration
 	DefaultSessionTimeout = 24 * time.Hour // Session timeout duration
-	MaxSessionsPerUser    = 10             // Maximum concurrent sessions per user
 
 	// Container pool defaults
 	DefaultPoolSize            = 10

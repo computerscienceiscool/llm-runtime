@@ -102,8 +102,10 @@ func ExecuteOpen(filepath string, cfg *config.Config, auditLog func(cmd, arg str
 	// Read the file using container
 	var content []byte
 	// Use containerized I/O
+	ctx, cancel := context.WithTimeout(context.Background(), cfg.IOTimeout)
+	defer cancel()
 	contentStr, err := sandbox.ReadFileInContainerPooled(
-		context.Background(),
+		ctx,
 		pool,
 		safePath,
 		cfg.RepositoryRoot,

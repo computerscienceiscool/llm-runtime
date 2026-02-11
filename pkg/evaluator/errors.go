@@ -33,16 +33,16 @@ func SanitizeError(err error) error {
 	return fmt.Errorf("%s", msg)
 }
 
+var (
+	unixPathRe = regexp.MustCompile(`/[a-zA-Z0-9/_\-\.]+`)
+	winPathRe  = regexp.MustCompile(`[A-Z]:\\[a-zA-Z0-9\\_\-\.]+`)
+	userInfoRe = regexp.MustCompile(`(user|host)\s+'[^']+'`)
+)
+
 // sanitizePaths removes file system paths
 func sanitizePaths(msg string) string {
-	// Match Unix paths: /home/user/file.txt
-	unixPath := regexp.MustCompile(`/[a-zA-Z0-9/_\-\.]+`)
-	msg = unixPath.ReplaceAllString(msg, "[path]")
-
-	// Match Windows paths: C:\Users\file.txt
-	winPath := regexp.MustCompile(`[A-Z]:\\[a-zA-Z0-9\\_\-\.]+`)
-	msg = winPath.ReplaceAllString(msg, "[path]")
-
+	msg = unixPathRe.ReplaceAllString(msg, "[path]")
+	msg = winPathRe.ReplaceAllString(msg, "[path]")
 	return msg
 }
 
@@ -65,9 +65,6 @@ func sanitizeDockerErrors(msg string) string {
 
 // sanitizeUserInfo removes usernames and hostnames
 func sanitizeUserInfo(msg string) string {
-	// Remove patterns like "user 'alice'" or "host 'machine'"
-	userPattern := regexp.MustCompile(`(user|host)\s+'[^']+'`)
-	msg = userPattern.ReplaceAllString(msg, "$1 [redacted]")
-
+	msg = userInfoRe.ReplaceAllString(msg, "$1 [redacted]")
 	return msg
 }

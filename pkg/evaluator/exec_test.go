@@ -27,7 +27,7 @@ func TestExecuteExec_Disabled(t *testing.T) {
 
 	audit := &testAuditLog{}
 	cmd := scanner.Command{Type: "exec", Argument: "ls"}
-	result := ExecuteExec(cmd, cfg, audit.log, nil)
+	result := ExecuteExec(cmd, cfg, audit.log)
 
 	if result.Success {
 		t.Error("expected failure when exec is disabled")
@@ -60,7 +60,7 @@ func TestExecuteExec_EmptyWhitelist(t *testing.T) {
 	}
 
 	cmd := scanner.Command{Type: "exec", Argument: "ls"}
-	result := ExecuteExec(cmd, cfg, nil, nil)
+	result := ExecuteExec(cmd, cfg, nil)
 
 	if result.Success {
 		t.Error("expected failure with empty whitelist")
@@ -82,7 +82,7 @@ func TestExecuteExec_CommandNotWhitelisted(t *testing.T) {
 	}
 
 	cmd := scanner.Command{Type: "exec", Argument: "rm -rf /"}
-	result := ExecuteExec(cmd, cfg, nil, nil)
+	result := ExecuteExec(cmd, cfg, nil)
 
 	if result.Success {
 		t.Error("expected failure for non-whitelisted command")
@@ -104,7 +104,7 @@ func TestExecuteExec_EmptyCommand(t *testing.T) {
 	}
 
 	cmd := scanner.Command{Type: "exec", Argument: ""}
-	result := ExecuteExec(cmd, cfg, nil, nil)
+	result := ExecuteExec(cmd, cfg, nil)
 
 	if result.Success {
 		t.Error("expected failure for empty command")
@@ -133,7 +133,7 @@ func TestExecuteExec_WhitelistPrefixMatch(t *testing.T) {
 	if !dockerAvailable() {
 		// Just test validation passes
 		cmd := scanner.Command{Type: "exec", Argument: "go test ./..."}
-		result := ExecuteExec(cmd, cfg, nil, nil)
+		result := ExecuteExec(cmd, cfg, nil)
 		// Will fail at Docker check, not whitelist
 		if result.Error != nil && strings.Contains(result.Error.Error(), "EXEC_VALIDATION") {
 			t.Error("whitelist should allow 'go test ./...' with 'go test' in whitelist")
@@ -151,7 +151,7 @@ func TestExecuteExec_CommandType(t *testing.T) {
 	}
 
 	cmd := scanner.Command{Type: "exec", Argument: "any command"}
-	result := ExecuteExec(cmd, cfg, nil, nil)
+	result := ExecuteExec(cmd, cfg, nil)
 
 	if result.Command.Type != "exec" {
 		t.Errorf("expected command type 'exec', got %q", result.Command.Type)
@@ -171,7 +171,7 @@ func TestExecuteExec_ExecutionTime(t *testing.T) {
 	}
 
 	cmd := scanner.Command{Type: "exec", Argument: "test"}
-	result := ExecuteExec(cmd, cfg, nil, nil)
+	result := ExecuteExec(cmd, cfg, nil)
 
 	if result.ExecutionTime <= 0 {
 		t.Error("execution time should be positive")
@@ -188,7 +188,7 @@ func TestExecuteExec_NilAuditLog(t *testing.T) {
 
 	// Should not panic with nil audit log
 	cmd := scanner.Command{Type: "exec", Argument: "test"}
-	result := ExecuteExec(cmd, cfg, nil, nil)
+	result := ExecuteExec(cmd, cfg, nil)
 
 	if result.Success {
 		t.Error("expected failure")
@@ -205,7 +205,7 @@ func TestExecuteExec_AuditLogOnValidationFailure(t *testing.T) {
 
 	audit := &testAuditLog{}
 	cmd := scanner.Command{Type: "exec", Argument: "test"}
-	ExecuteExec(cmd, cfg, audit.log, nil)
+	ExecuteExec(cmd, cfg, audit.log)
 
 	entries := audit.getEntries()
 	if len(entries) != 1 {
@@ -245,7 +245,7 @@ func TestExecuteExec_DockerNotAvailable(t *testing.T) {
 	}
 
 	cmd := scanner.Command{Type: "exec", Argument: "echo hello"}
-	result := ExecuteExec(cmd, cfg, nil, nil)
+	result := ExecuteExec(cmd, cfg, nil)
 
 	if result.Success {
 		t.Error("expected failure when Docker is not available")
@@ -279,7 +279,7 @@ func TestExecuteExec_Integration_Echo(t *testing.T) {
 
 	audit := &testAuditLog{}
 	cmd := scanner.Command{Type: "exec", Argument: "echo hello world"}
-	result := ExecuteExec(cmd, cfg, audit.log, nil)
+	result := ExecuteExec(cmd, cfg, audit.log)
 
 	if !result.Success {
 		t.Errorf("expected success, got error: %v", result.Error)
@@ -326,7 +326,7 @@ func TestExecuteExec_Integration_FailingCommand(t *testing.T) {
 	exec.Command("docker", "pull", "alpine:latest").Run()
 
 	cmd := scanner.Command{Type: "exec", Argument: "exit 1"}
-	result := ExecuteExec(cmd, cfg, nil, nil)
+	result := ExecuteExec(cmd, cfg, nil)
 
 	if result.Success {
 		t.Error("expected failure for exit 1")
@@ -362,7 +362,7 @@ func TestExecuteExec_Integration_Timeout(t *testing.T) {
 
 	start := time.Now()
 	cmd := scanner.Command{Type: "exec", Argument: "sleep 60"}
-	result := ExecuteExec(cmd, cfg, nil, nil)
+	result := ExecuteExec(cmd, cfg, nil)
 	elapsed := time.Since(start)
 
 	if result.Success {
@@ -403,7 +403,7 @@ func TestExecuteExec_Integration_Stderr(t *testing.T) {
 	exec.Command("docker", "pull", "alpine:latest").Run()
 
 	cmd := scanner.Command{Type: "exec", Argument: "sh -c 'echo error >&2'"}
-	result := ExecuteExec(cmd, cfg, nil, nil)
+	result := ExecuteExec(cmd, cfg, nil)
 
 	if !result.Success {
 		t.Errorf("expected success, got error: %v", result.Error)
@@ -434,7 +434,7 @@ func TestExecuteExec_Integration_CombinedOutput(t *testing.T) {
 	exec.Command("docker", "pull", "alpine:latest").Run()
 
 	cmd := scanner.Command{Type: "exec", Argument: "sh -c 'echo stdout && echo stderr >&2'"}
-	result := ExecuteExec(cmd, cfg, nil, nil)
+	result := ExecuteExec(cmd, cfg, nil)
 
 	if !result.Success {
 		t.Errorf("expected success, got error: %v", result.Error)
@@ -495,7 +495,7 @@ func TestExecuteExec_WithStdin(t *testing.T) {
 				Argument: tt.command,
 				Content:  tt.stdin,
 			}
-			result := ExecuteExec(cmd, cfg, nil, nil)
+			result := ExecuteExec(cmd, cfg, nil)
 
 			if !result.Success {
 				t.Errorf("expected success, got error: %v", result.Error)
@@ -538,7 +538,7 @@ func TestExecuteExec_WhitelistVariations(t *testing.T) {
 			}
 
 			cmd := scanner.Command{Type: "exec", Argument: tt.command}
-			result := ExecuteExec(cmd, cfg, nil, nil)
+			result := ExecuteExec(cmd, cfg, nil)
 
 			// If not allowed, should fail at validation
 			if !tt.allowed && result.Success {
@@ -567,7 +567,7 @@ func BenchmarkExecuteExec_ValidationOnly(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		ExecuteExec(cmd, cfg, nil, nil)
+		ExecuteExec(cmd, cfg, nil)
 	}
 }
 
@@ -583,7 +583,7 @@ func BenchmarkExecuteExec_WhitelistCheck(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		ExecuteExec(cmd, cfg, nil, nil)
+		ExecuteExec(cmd, cfg, nil)
 	}
 }
 
@@ -599,7 +599,7 @@ func TestExecuteExec_ResultOutputFormatting(t *testing.T) {
 	}
 
 	cmd := scanner.Command{Type: "exec", Argument: "test command"}
-	result := ExecuteExec(cmd, cfg, nil, nil)
+	result := ExecuteExec(cmd, cfg, nil)
 
 	// Verify command is properly set up
 	if result.Command.Type != "exec" {
@@ -620,7 +620,7 @@ func TestExecuteExec_AuditLogFormat(t *testing.T) {
 
 	audit := &testAuditLog{}
 	cmd := scanner.Command{Type: "exec", Argument: "test"}
-	ExecuteExec(cmd, cfg, audit.log, nil)
+	ExecuteExec(cmd, cfg, audit.log)
 
 	entries := audit.getEntries()
 	if len(entries) != 1 {

@@ -47,9 +47,9 @@ func (e *Executor) Execute(cmd scanner.Command) scanner.ExecutionResult {
 	case "write":
 		result = ExecuteWrite(cmd.Argument, cmd.Content, e.config, e.auditLog, e.pool)
 	case "exec":
-		result = ExecuteExec(cmd, e.config, e.auditLog, e.pool)
+		result = ExecuteExec(cmd, e.config, e.auditLog)
 	case "search":
-		result = ExecuteSearch(cmd.Argument, e.config, e.searchCfg, e.auditLog, e.pool)
+		result = ExecuteSearch(cmd.Argument, e.config, e.searchCfg, e.auditLog)
 	default:
 		result = scanner.ExecutionResult{
 			Command: cmd,

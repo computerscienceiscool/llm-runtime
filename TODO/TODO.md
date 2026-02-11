@@ -5,7 +5,6 @@ Maintain zero-padded IDs starting at 001 and do not renumber. Keep only this ind
 ## High Priority
 - [ ] 014 - Define approach for shell exec command injection protections (decide security modes and enforcement for exec whitelist vs shell flexibility; document outcome).
 - [ ] 018 - Speed up test suite (cache modules, reduce Docker-dependent cases, add fast paths/flags).
-
 ## Medium Priority
 - [ ] 006 - Document the config persona system when implemented.
 - [ ] 015 - Implement MCP integration (Model Context Protocol) for standardized LLM tool integration; document usage.
@@ -59,6 +58,12 @@ Maintain zero-padded IDs starting at 001 and do not renumber. Keep only this ind
 - [x] 038 - Add concurrent audit log test. 10 goroutines x 20 writes with `-race` flag verifies no interleaving or corruption.
 - [x] 051 - Remove misleading `ExecNetworkEnabled` config flag. Network is always disabled (`NetworkMode: "none"`) by design. Removed field from config struct, CLI flag, and config file. Documented in config docs.
 - [x] 004 - Closed as stale. App test failures are Docker permission errors, not nil pointer issues.
+- [x] 053 - Add I/O timeout context to `ExecuteOpen` and `ExecuteWrite`. Both now use `context.WithTimeout(ctx, cfg.IOTimeout)` instead of `context.Background()`.
+- [x] 054 - Fix `--io-timeout` Cobra flag default from `"60s"` to `"30s"` in `cli/root.go` to match `DefaultIOTimeout` (30s).
+- [x] 055 - Check `ContainerRemove` error in `pool.go`. Cleanup failure now surfaces in the returned error message.
+- [x] 056 - Remove unused `pool` parameter from `ExecuteExec` and `ExecuteSearch`. Updated signatures, callers in `executor.go`, and all test call sites.
+- [x] 057 - Remove 7 unused constants from `constants.go`: `DefaultContainerCPUs`, `AuditLogMaxSize`, `AuditLogMaxBackups`, `AuditLogMaxAge`, `MaxSessionsPerUser`, `MaxBackups`, `BackupExtension`.
+- [x] 058 - Hoist compiled regexes in `errors.go` to package-level `var` block. `sanitizePaths` and `sanitizeUserInfo` no longer recompile on every call.
 
 ## Other TODO Files
 - docs/TODO.md
