@@ -3,7 +3,6 @@
 Maintain zero-padded IDs starting at 001 and do not renumber. Keep only this index file in the TODO folder. Reference items by number in commits/PRs. Move completed items to the DONE section (checked) instead of deleting them. List any sibling TODO files below.
 
 ## High Priority
-- [ ] 004 - Resolve app test nil pointer issues.
 - [ ] 014 - Define approach for shell exec command injection protections (decide security modes and enforcement for exec whitelist vs shell flexibility; document outcome).
 - [ ] 018 - Speed up test suite (cache modules, reduce Docker-dependent cases, add fast paths/flags).
 
@@ -59,6 +58,7 @@ Maintain zero-padded IDs starting at 001 and do not renumber. Keep only this ind
 - [x] 033 - Surface scanner buffer overflow errors. `checkBufferLimit()` failures in `StateWriteBody`/`StateExecBody` now set `lastErr` with a `BUFFER_OVERFLOW` message instead of silently discarding.
 - [x] 038 - Add concurrent audit log test. 10 goroutines x 20 writes with `-race` flag verifies no interleaving or corruption.
 - [x] 051 - Remove misleading `ExecNetworkEnabled` config flag. Network is always disabled (`NetworkMode: "none"`) by design. Removed field from config struct, CLI flag, and config file. Documented in config docs.
+- [x] 004 - Closed as stale. App test failures are Docker permission errors, not nil pointer issues.
 
 ## Other TODO Files
 - docs/TODO.md

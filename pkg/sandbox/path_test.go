@@ -467,6 +467,144 @@ func TestValidatePath_InvalidRepoRoot(t *testing.T) {
 	})
 }
 
+func TestValidatePath_TraversalAttacks(t *testing.T) {
+	repoRoot := t.TempDir()
+
+	attacks := []struct {
+		name string
+		path string
+	}{
+		{"null byte injection", "src/test\x00.go/../../../etc/passwd"},
+		{"backslash traversal", "src\\..\\..\\etc\\passwd"},
+		{"double encoded dots", "src/....//....//etc/passwd"},
+		{"trailing dot-dot", "src/subdir/.."},
+		{"absolute escape", "/etc/passwd"},
+		{"absolute escape with dotdot", "/tmp/../etc/passwd"},
+		{"home directory", "~/../../etc/passwd"},
+		{"triple dot-dot", "src/.../../../etc/passwd"},
+		{"dot-dot at start", "../src/file.go"},
+		{"many levels up", "a/b/c/d/e/../../../../../../../../../etc/shadow"},
+	}
+
+	for _, att := range attacks {
+		t.Run(att.name, func(t *testing.T) {
+			result, err := ValidatePath(att.path, repoRoot, nil)
+			if err == nil {
+				// If no error, the path must still be within repo
+				if !strings.HasPrefix(result, repoRoot) {
+					t.Errorf("ValidatePath() returned path outside repo without error: %s", result)
+				}
+			}
+			// Either an error or a path within repo is acceptable
+		})
+	}
+}
+
+func TestValidatePath_SecretFileExclusions(t *testing.T) {
+	repoRoot := t.TempDir()
+
+	defaultExcluded := []string{".git", ".env", ".env.local", "*.key", "*.pem", "*.p12", "*.pfx", "secrets", "credentials"}
+
+	tests := []struct {
+		name    string
+		path    string
+		wantErr bool
+	}{
+		{"private key file", "server.key", true},
+		{"certificate file", "cert.pem", true},
+		{"pkcs12 file", "keystore.p12", true},
+		{"pfx file", "cert.pfx", true},
+		{"env file", ".env", true},
+		{"local env file", ".env.local", true},
+		{"secrets directory file", "secrets/api_token", true},
+		{"credentials directory file", "credentials/aws.json", true},
+		{"git directory file", ".git/HEAD", true},
+		{"normal go file", "main.go", false},
+		{"normal yaml", "config.yaml", false},
+		{"file with key in name", "keyboard.go", false},
+		{"file with pem in name", "example.go", false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := ValidatePath(tt.path, repoRoot, defaultExcluded)
+			if tt.wantErr && err == nil {
+				t.Errorf("ValidatePath(%q) should be blocked by exclusion", tt.path)
+			}
+			if !tt.wantErr && err != nil {
+				t.Errorf("ValidatePath(%q) unexpected error: %v", tt.path, err)
+			}
+		})
+	}
+}
+
+func TestValidatePath_RepoRootBoundary(t *testing.T) {
+	repoRoot := t.TempDir()
+
+	t.Run("repo root itself is valid", func(t *testing.T) {
+		result, err := ValidatePath(".", repoRoot, nil)
+		if err != nil {
+			t.Errorf("repo root path should be valid: %v", err)
+		}
+		if result != repoRoot {
+			t.Errorf("expected %q, got %q", repoRoot, result)
+		}
+	})
+
+	t.Run("empty path resolves to repo root", func(t *testing.T) {
+		result, err := ValidatePath("", repoRoot, nil)
+		if err != nil {
+			t.Errorf("empty path should resolve to repo root: %v", err)
+		}
+		if result != repoRoot {
+			t.Errorf("expected %q, got %q", repoRoot, result)
+		}
+	})
+
+	t.Run("path with trailing slash", func(t *testing.T) {
+		subDir := filepath.Join(repoRoot, "src")
+		os.MkdirAll(subDir, 0755)
+		result, err := ValidatePath("src/", repoRoot, nil)
+		if err != nil {
+			t.Errorf("path with trailing slash should be valid: %v", err)
+		}
+		if result != subDir {
+			t.Errorf("expected %q, got %q", subDir, result)
+		}
+	})
+}
+
+func TestValidatePath_ExcludedPrefixNotOverBroad(t *testing.T) {
+	repoRoot := t.TempDir()
+
+	// Excluding "sec" should NOT block "security.go" (only exact basename match)
+	// Excluding ".env" should NOT block ".environment" (only exact match)
+	tests := []struct {
+		name          string
+		path          string
+		excludedPaths []string
+		wantErr       bool
+	}{
+		{"sec exclusion does not block security.go", "security.go", []string{"sec"}, false},
+		{"env exclusion does not block .environment", ".environment", []string{".env"}, false},
+		{"git exclusion does not block .github", ".github/workflows/ci.yml", []string{".git"}, false},
+		{"key exclusion blocks server.key", "server.key", []string{"*.key"}, true},
+		{"key exclusion does not block keyboard.txt", "keyboard.txt", []string{"*.key"}, false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := ValidatePath(tt.path, repoRoot, tt.excludedPaths)
+			if tt.wantErr && err == nil {
+				t.Errorf("ValidatePath(%q) should be blocked", tt.path)
+			}
+			if !tt.wantErr && err != nil {
+				t.Errorf("ValidatePath(%q) unexpected error: %v", tt.path, err)
+			}
+		})
+	}
+}
+
 func TestValidatePath_NestedExclusions(t *testing.T) {
 	repoRoot := t.TempDir()
 
