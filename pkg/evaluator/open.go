@@ -1,9 +1,12 @@
 package evaluator
 
 import (
-	"fmt"
 	"context"
+	"fmt"
+	"io"
+	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/computerscienceiscool/llm-runtime/pkg/config"
@@ -59,6 +62,29 @@ func ExecuteOpen(filepath string, cfg *config.Config, auditLog func(cmd, arg str
 			auditLog("open", filepath, false, fullError.Error())
 		}
 		return result
+	}
+
+	// Check for binary content by sniffing the first 512 bytes
+	if fileInfo.Size() > 0 {
+		f, err := os.Open(safePath)
+		if err == nil {
+			buf := make([]byte, 512)
+			n, readErr := f.Read(buf)
+			f.Close()
+			if readErr == nil || readErr == io.EOF {
+				contentType := http.DetectContentType(buf[:n])
+				if !strings.HasPrefix(contentType, "text/") && contentType != "application/json" {
+					result.Success = false
+					fullError := fmt.Errorf("BINARY_FILE: %s appears to be binary (%s)", filepath, contentType)
+					result.Error = SanitizeError(fullError)
+					result.ExecutionTime = time.Since(startTime)
+					if auditLog != nil {
+						auditLog("open", filepath, false, fullError.Error())
+					}
+					return result
+				}
+			}
+		}
 	}
 
 	// Check file size

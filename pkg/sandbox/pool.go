@@ -335,8 +335,6 @@ func (p *ContainerPool) healthCheck(ctx context.Context, container *PooledContai
 func (p *ContainerPool) healthCheckLoop() {
 	defer p.wg.Done()
 
-	ctx := context.Background()
-
 	for {
 		p.mu.RLock()
 		if p.closed {
@@ -347,6 +345,9 @@ func (p *ContainerPool) healthCheckLoop() {
 
 		select {
 		case <-p.healthCheckTicker.C:
+			// Use a per-tick timeout to avoid blocking indefinitely on Docker
+			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+
 			p.mu.RLock()
 			containers := make([]*PooledContainer, len(p.containers))
 			copy(containers, p.containers)
@@ -380,6 +381,8 @@ func (p *ContainerPool) healthCheckLoop() {
 
 				c.mu.Unlock()
 			}
+
+			cancel()
 		}
 	}
 }
@@ -405,8 +408,9 @@ func (p *ContainerPool) Close() error {
 	// Close available channel
 	close(p.available)
 
-	// Destroy all containers
-	ctx := context.Background()
+	// Destroy all containers with a timeout to avoid hanging on unresponsive Docker
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
 	for _, container := range p.containers {
 		p.destroyContainer(ctx, container)
 	}

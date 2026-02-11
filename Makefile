@@ -323,11 +323,11 @@ check-io-image:
 # Test containerized I/O operations
 test-io-container: build check-io-image
 	@echo "Testing containerized I/O operations..."
-	@REPO_PATH=$$(echo "Test: <open README.md>" | KEEP_TEST_REPOS=true $(BINARY_PATH) --io-containerized 2>&1 | grep "Dynamic repo created at:" | sed 's/.*: //'); \
+	@REPO_PATH=$$(echo "Test: <open README.md>" | KEEP_TEST_REPOS=true $(BINARY_PATH) 2>&1 | grep "Dynamic repo created at:" | sed 's/.*: //'); \
 	echo "Dynamic repo: $$REPO_PATH"
 	@echo ""
 	@echo "Testing containerized write..."
-	@REPO_PATH=$$(echo "Test: <write test_io_output.txt>This file was created using containerized I/O (Phase 5)\nTimestamp: $$(date)</write>" | KEEP_TEST_REPOS=true $(BINARY_PATH) --io-containerized 2>&1 | grep "Dynamic repo created at:" | sed 's/.*: //'); \
+	@REPO_PATH=$$(echo "Test: <write test_io_output.txt>This file was created using containerized I/O (Phase 5)\nTimestamp: $$(date)</write>" | KEEP_TEST_REPOS=true $(BINARY_PATH) 2>&1 | grep "Dynamic repo created at:" | sed 's/.*: //'); \
 	if [ -f "$$REPO_PATH/test_io_output.txt" ]; then \
 		echo "Containerized write successful"; \
 		echo "File contents:"; \

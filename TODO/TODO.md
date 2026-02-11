@@ -15,9 +15,7 @@ Maintain zero-padded IDs starting at 001 and do not renumber. Keep only this ind
 - [ ] 006 - Document the config persona system when implemented.
 - [ ] 015 - Implement MCP integration (Model Context Protocol) for standardized LLM tool integration; document usage.
 - [ ] 016 - Add CLI project detection (`llm-runtime --auto`) to suggest configs based on repo type.
-- [ ] 031 - Add binary file detection in `evaluator/open.go`. Reading binary data produces garbled UTF-8 sent to the LLM. Detect via `net/http.DetectContentType` or null-byte scan and return a clear error.
 - [ ] 033 - Scanner buffer overflow silently aborts commands. When `checkBufferLimit()` fails in `StateWriteBody`/`StateExecBody`, the command is discarded and the scanner moves on with no error surfaced to the caller.
-- [ ] 044 - Add timeout to container cleanup in `pool.Close()` (`sandbox/pool.go:404`). Uses `context.Background()` with no deadline; hangs indefinitely if Docker daemon is unresponsive.
 
 ## Low Priority
 - [ ] 009 - Add architecture diagrams as images in documentation.
@@ -27,8 +25,6 @@ Maintain zero-padded IDs starting at 001 and do not renumber. Keep only this ind
 - [ ] 037 - Scanner processes input byte-by-byte (`scanner.go:108`), which may split multi-byte UTF-8 characters. Consider rune-based iteration for correctness with non-ASCII content.
 - [ ] 038 - Add concurrent audit log tests. `session.LogAudit` has no synchronization; multiple goroutines writing to the same logger can interleave entries.
 - [ ] 047 - Fix race condition in container pool `Return()` method (`sandbox/pool.go:176-228`). Check-then-act on `p.closed` without holding the lock; pool can close between check and container return.
-- [ ] 048 - Add timeout to health check loop context (`sandbox/pool.go:333`). Uses `context.Background()` with no cancellation; can block indefinitely during container inspection.
-- [ ] 050 - Remove or implement `--io-containerized` flag. Makefile `test-io-container` target references this flag but it is not defined anywhere in the CLI.
 - [ ] 051 - Wire `ExecNetworkEnabled` config flag to container creation or document that network is always disabled. Currently all container code hardcodes `NetworkMode: "none"`. Config default corrected to `false` in `llm-runtime.config.yaml`.
 
 ## DONE
@@ -59,6 +55,10 @@ Maintain zero-padded IDs starting at 001 and do not renumber. Keep only this ind
 - [x] 043 - Escape pipe delimiters in audit log fields (`sandbox/audit.go`). Added escape function to replace `|` with `\|` in all variable fields. Updated tests to verify escaping.
 - [x] 045 - Validate memory limit parsing in `sandbox/container.go` and `sandbox/io_container.go`. Both `parseMemoryLimit()` and `parseMemoryLimitIO()` now return `(int64, error)` and reject invalid formats. Updated all callers and tests.
 - [x] 046 - Validate path length against `MaxPathLength` constant in `sandbox/path.go`. Added check at top of `ValidatePath()`. Added tests.
+- [x] 031 - Add binary file detection in `evaluator/open.go`. Sniff first 512 bytes with `http.DetectContentType`; reject non-text content types with `BINARY_FILE` error. Unskipped test.
+- [x] 044 - Add timeout to container cleanup in `pool.Close()`. Changed `context.Background()` to 30-second timeout so pool shutdown doesn't hang on unresponsive Docker.
+- [x] 048 - Add timeout to health check loop context in `pool.go`. Each health check tick now uses a 10-second timeout context instead of unbounded `context.Background()`.
+- [x] 050 - Remove broken `--io-containerized` flag from Makefile `test-io-container` target. The flag was never implemented in the CLI.
 
 ## Other TODO Files
 - docs/TODO.md

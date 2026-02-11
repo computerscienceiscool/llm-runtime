@@ -285,25 +285,28 @@ func TestExecuteOpen_EmptyFile(t *testing.T) {
 }
 
 func TestExecuteOpen_BinaryContent(t *testing.T) {
-	t.Skip("TODO: Fix binary content handling")
 	tmpDir := t.TempDir()
 	cfg := newTestConfig(tmpDir)
 
 	// Create file with binary content
 	binaryContent := []byte{0x00, 0x01, 0x02, 0xFF, 0xFE, 0xFD}
-	testFile := filepath.Join(tmpDir, "binary.txt")
+	testFile := filepath.Join(tmpDir, "binary.dat")
 	if err := os.WriteFile(testFile, binaryContent, 0644); err != nil {
 		t.Fatalf("failed to create test file: %v", err)
 	}
 
-	result := ExecuteOpen("binary.txt", cfg, nil, nil)
+	result := ExecuteOpen("binary.dat", cfg, nil, nil)
 
-	if !result.Success {
-		t.Errorf("expected success, got error: %v", result.Error)
+	if result.Success {
+		t.Error("expected failure for binary file")
 	}
 
-	if result.Result != string(binaryContent) {
-		t.Error("binary content mismatch")
+	if result.Error == nil {
+		t.Fatal("expected error to be set")
+	}
+
+	if !strings.Contains(result.Error.Error(), "BINARY_FILE") {
+		t.Errorf("expected BINARY_FILE error, got: %v", result.Error)
 	}
 }
 
