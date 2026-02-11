@@ -110,6 +110,10 @@ func (se *SearchEngine) Search(query string) ([]SearchResult, error) {
 		results = append(results, result)
 	}
 
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating search results: %w", err)
+	}
+
 	// Rank results by score
 	rankSearchResults(results)
 

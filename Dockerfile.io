@@ -1,4 +1,4 @@
-FROM golang:1.22.2-alpine
+FROM alpine:3.21
 
 # Create non-root user
 RUN addgroup -g 1000 llmuser && \

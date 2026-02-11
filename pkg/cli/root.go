@@ -17,6 +17,19 @@ var rootCmd = &cobra.Command{
 }
 
 func init() {
+	// Set all default values in Viper
+	config.SetViperDefaults()
+
+	// Set default config file name
+	viper.SetConfigName("llm-runtime.config")
+	viper.SetConfigType("yaml")
+	viper.AddConfigPath(".")
+	viper.AddConfigPath("$HOME")
+
+	// Enable environment variables with LLM prefix
+	viper.SetEnvPrefix("LLM")
+	viper.AutomaticEnv()
+
 	cobra.OnInitialize(initConfig)
 
 	// Repository flags
@@ -85,19 +98,4 @@ func runRoot(cmd *cobra.Command, args []string) error {
 // Execute runs the root command
 func Execute() error {
 	return rootCmd.Execute()
-}
-
-func init() {
-	// Set all default values in Viper
-	config.SetViperDefaults()
-
-	// Set default config file name
-	viper.SetConfigName("llm-runtime.config")
-	viper.SetConfigType("yaml")
-	viper.AddConfigPath(".")
-	viper.AddConfigPath("$HOME")
-
-	// Enable environment variables with LLM prefix
-	viper.SetEnvPrefix("LLM")
-	viper.AutomaticEnv()
 }

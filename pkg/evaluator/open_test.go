@@ -423,7 +423,6 @@ func TestExecuteOpen_ExecutionTimeTracking(t *testing.T) {
 }
 
 func TestExecuteOpen_DirectoryInsteadOfFile(t *testing.T) {
-	t.Skip("TODO: Add proper directory detection")
 	tmpDir := t.TempDir()
 	cfg := newTestConfig(tmpDir)
 
@@ -439,9 +438,12 @@ func TestExecuteOpen_DirectoryInsteadOfFile(t *testing.T) {
 		t.Error("expected failure when opening a directory")
 	}
 
-	// Should fail with READ_ERROR since directories can't be read as files
 	if result.Error == nil {
 		t.Error("expected error to be set")
+	}
+
+	if !strings.Contains(result.Error.Error(), "IS_DIRECTORY") {
+		t.Errorf("expected IS_DIRECTORY error, got: %v", result.Error)
 	}
 }
 
@@ -653,7 +655,6 @@ func TestExecuteOpen_AuditLogOnFileTooLarge(t *testing.T) {
 }
 
 func TestExecuteOpen_ReadErrorOnDirectory(t *testing.T) {
-	t.Skip("TODO: Add proper directory detection")
 	tmpDir := t.TempDir()
 	cfg := newTestConfig(tmpDir)
 
@@ -670,8 +671,8 @@ func TestExecuteOpen_ReadErrorOnDirectory(t *testing.T) {
 		t.Error("expected failure when opening a directory")
 	}
 
-	if !strings.Contains(result.Error.Error(), "READ_ERROR") {
-		t.Errorf("expected READ_ERROR, got: %v", result.Error)
+	if !strings.Contains(result.Error.Error(), "IS_DIRECTORY") {
+		t.Errorf("expected IS_DIRECTORY, got: %v", result.Error)
 	}
 
 	// Check audit log

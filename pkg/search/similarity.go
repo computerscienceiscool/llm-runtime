@@ -29,10 +29,12 @@ func cosineSimilarity(a, b []float32) float32 {
 }
 
 // serializeEmbedding converts float32 slice to bytes for storage
-func serializeEmbedding(embedding []float32) []byte {
+func serializeEmbedding(embedding []float32) ([]byte, error) {
 	buf := new(bytes.Buffer)
-	binary.Write(buf, binary.LittleEndian, embedding)
-	return buf.Bytes()
+	if err := binary.Write(buf, binary.LittleEndian, embedding); err != nil {
+		return nil, err
+	}
+	return buf.Bytes(), nil
 }
 
 // deserializeEmbedding converts bytes back to float32 slice
@@ -43,6 +45,8 @@ func deserializeEmbedding(data []byte) []float32 {
 
 	embedding := make([]float32, embeddingDimensions)
 	buf := bytes.NewReader(data)
-	binary.Read(buf, binary.LittleEndian, &embedding)
+	if err := binary.Read(buf, binary.LittleEndian, &embedding); err != nil {
+		return nil
+	}
 	return embedding
 }

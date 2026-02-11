@@ -275,7 +275,7 @@ echo
 
 # Build the tool if needed
 if [ ! -f "./llm-runtime" ]; then
-    go build -o llm-runtime main.go
+    go build -o llm-runtime ./cmd/llm-runtime
 fi
 
 # Simulate LLM exploration

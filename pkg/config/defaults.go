@@ -38,6 +38,9 @@ func SetViperDefaults() {
 	viper.SetDefault("commands.write.max_file_size", DefaultMaxWriteSize)
 	viper.SetDefault("commands.write.backup_before_write", true)
 
+	// I/O defaults
+	viper.SetDefault("io-timeout", DefaultIOTimeout.String())
+
 	// Command defaults - Exec
 	viper.SetDefault("commands.exec.enabled", false)
 	viper.SetDefault("commands.exec.container_image", "ubuntu:22.04")
@@ -84,56 +87,6 @@ func SetViperDefaults() {
 	viper.SetDefault("container_pool.startup_containers", DefaultStartupContainers)
 }
 
-// SetFullConfigDefaults sets default values on a FullConfig struct (deprecated, use SetViperDefaults)
-func setFullConfigDefaults(config *fullConfig) {
-	// Default repository settings
-	config.Repository.Root = "."
-	config.Repository.ExcludedPaths = []string{".git", ".env", "*.key", "*.pem"}
-
-	// Default command settings
-	config.Commands.Open.Enabled = true
-	config.Commands.Open.MaxFileSize = DefaultMaxFileSize
-	config.Commands.Open.AllowedExtensions = []string{".go", ".py", ".js", ".md", ".txt", ".json", ".yaml"}
-
-	config.Commands.Write.Enabled = true
-	config.Commands.Write.MaxFileSize = DefaultMaxWriteSize
-	config.Commands.Write.BackupBeforeWrite = true
-
-	config.Commands.Exec.Enabled = false
-	config.Commands.Exec.ContainerImage = "ubuntu:22.04"
-	config.Commands.Exec.TimeoutSeconds = int(DefaultExecTimeout.Seconds())
-	config.Commands.Exec.MemoryLimit = DefaultContainerMemory
-	config.Commands.Exec.CPULimit = 2
-	config.Commands.Exec.Whitelist = []string{"go test", "go build", "npm test", "make"}
-
-	// Default search settings
-	config.Commands.Search.Enabled = false
-	config.Commands.Search.VectorDBPath = "./embeddings.db"
-	config.Commands.Search.EmbeddingModel = "all-MiniLM-L6-v2"
-	config.Commands.Search.MaxResults = DefaultMaxSearchResults
-	config.Commands.Search.MinSimilarityScore = DefaultMinSimilarity
-	config.Commands.Search.MaxPreviewLength = 100
-	config.Commands.Search.ChunkSize = 1000
-	config.Commands.Search.OllamaURL = "http://localhost:11434"
-	config.Commands.Search.IndexExtensions = []string{".go", ".py", ".js", ".md", ".txt", ".yaml", ".json"}
-	config.Commands.Search.MaxFileSize = int64(DefaultMaxFileSize)
-
-	// Default security settings
-	config.Security.RateLimitPerMinute = 100
-	config.Security.LogAllOperations = true
-	config.Security.AuditLogPath = DefaultAuditLogPath
-
-	// Default output settings
-	config.Output.ShowSummaries = true
-	config.Output.ShowExecutionTime = true
-	config.Output.TruncateLargeOutputs = true
-	config.Output.MaxOutputLines = 1000
-
-	// Default logging settings
-	config.Logging.Level = "info"
-	config.Logging.File = "./llm-runtime.log"
-	config.Logging.Format = "json"
-}
 
 // LoadSearchConfig loads search configuration from viper (config file + defaults)
 func LoadSearchConfig() *search.SearchConfig {

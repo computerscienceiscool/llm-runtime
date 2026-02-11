@@ -2,6 +2,7 @@ package search
 
 import (
 	"database/sql"
+	"fmt"
 	"os"
 	"path/filepath"
 	"time"
@@ -77,9 +78,12 @@ func getFileInfo(db *sql.DB, filePath string) (*FileInfo, error) {
 
 // storeFileInfo stores file metadata and embedding in database
 func storeFileInfo(db *sql.DB, info *FileInfo) error {
-	embeddingData := serializeEmbedding(info.Embedding)
+	embeddingData, err := serializeEmbedding(info.Embedding)
+	if err != nil {
+		return fmt.Errorf("failed to serialize embedding: %w", err)
+	}
 
-	_, err := db.Exec(`
+	_, err = db.Exec(`
 		INSERT OR REPLACE INTO embeddings 
 		(filepath, content_hash, embedding, last_modified, file_size, indexed_at)
 		VALUES (?, ?, ?, ?, ?, ?)

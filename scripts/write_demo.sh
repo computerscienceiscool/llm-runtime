@@ -39,7 +39,7 @@ echo "Building the tool..."
 
 # Build the tool if not already built
 if [ ! -f "./llm-runtime" ]; then
-    go build -o llm-runtime main.go
+    go build -o llm-runtime ./cmd/llm-runtime
 fi
 
 echo

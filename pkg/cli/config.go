@@ -98,7 +98,8 @@ func buildConfig() (*config.Config, error) {
 	}
 	cfg.ExecEnabled = execEnabled
 
-	//fmt.Printf("DEBUG buildConfig: RepositoryRoot = %s\n", cfg.RepositoryRoot)
+	// Audit log path
+	cfg.AuditLogPath = viper.GetString("security.audit_log_path")
 
 	return cfg, nil
 }

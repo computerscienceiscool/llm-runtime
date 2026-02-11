@@ -12,7 +12,7 @@ echo
 # Build the tool
 if [ ! -f "./llm-runtime" ]; then
     echo "Building tool..."
-    go build -o llm-runtime main.go || exit 1
+    go build -o llm-runtime ./cmd/llm-runtime || exit 1
 fi
 
 # Create test environment

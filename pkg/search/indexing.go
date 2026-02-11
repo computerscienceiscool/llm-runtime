@@ -1,6 +1,7 @@
 package search
 
 import (
+	"crypto/sha256"
 	"database/sql"
 	"fmt"
 	"io"
@@ -182,7 +183,7 @@ func indexFile(db *sql.DB, cfg *SearchConfig, repoRoot string, filePath string, 
 	}
 
 	// Calculate content hash
-	contentHash := fmt.Sprintf("%x", content)
+	contentHash := fmt.Sprintf("%x", sha256.Sum256(content))
 
 	// Generate embedding - FIXED: Pass model from config
 	truncated := truncateText(string(content), 200)
@@ -272,7 +273,9 @@ func UpdateIndex(db *sql.DB, cfg *SearchConfig, repoRoot string, excludedPaths [
 	// Remove files that no longer exist
 	for _, dbFile := range dbFiles {
 		if !existingFiles[dbFile] {
-			removeFileInfo(db, dbFile)
+			if err := removeFileInfo(db, dbFile); err != nil {
+				return fmt.Errorf("failed to remove stale index entry %s: %w", dbFile, err)
+			}
 		}
 	}
 
@@ -289,7 +292,9 @@ func CleanupIndex(db *sql.DB, repoRoot string) error {
 	for _, filePath := range files {
 		fullPath := filepath.Join(repoRoot, filePath)
 		if _, err := os.Stat(fullPath); os.IsNotExist(err) {
-			removeFileInfo(db, filePath)
+			if err := removeFileInfo(db, filePath); err != nil {
+				return fmt.Errorf("failed to remove index entry for deleted file %s: %w", filePath, err)
+			}
 		}
 	}
 

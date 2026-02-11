@@ -16,26 +16,45 @@ type Session struct {
 	CommandsRun int
 	StartTime   time.Time
 	AuditLogger *log.Logger
+	auditFile   *os.File
 }
 
 // NewSession creates a new execution session
 func NewSession(cfg *config.Config) *Session {
 	sessionID := fmt.Sprintf("%d", time.Now().UnixNano())
 
+	// Determine audit log path from config, fall back to default
+	auditPath := config.DefaultAuditLogPath
+	if cfg != nil && cfg.AuditLogPath != "" {
+		auditPath = cfg.AuditLogPath
+	}
+
 	// Setup audit logging
-	auditFile, err := os.OpenFile("audit.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+	auditFile, err := os.OpenFile(auditPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
 	if err != nil {
 		log.Printf("Warning: Could not open audit log: %v", err)
 	}
 
-	auditLogger := log.New(auditFile, "", 0)
+	var auditLogger *log.Logger
+	if auditFile != nil {
+		auditLogger = log.New(auditFile, "", 0)
+	}
 
 	return &Session{
 		ID:          sessionID,
 		Config:      cfg,
 		StartTime:   time.Now(),
 		AuditLogger: auditLogger,
+		auditFile:   auditFile,
 	}
+}
+
+// Close releases session resources
+func (s *Session) Close() error {
+	if s.auditFile != nil {
+		return s.auditFile.Close()
+	}
+	return nil
 }
 
 // LogAudit writes an audit log entry

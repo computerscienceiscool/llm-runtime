@@ -49,6 +49,18 @@ func ExecuteOpen(filepath string, cfg *config.Config, auditLog func(cmd, arg str
 		return result
 	}
 
+	// Check if path is a directory
+	if fileInfo.IsDir() {
+		result.Success = false
+		fullError := fmt.Errorf("IS_DIRECTORY: %s is a directory, not a file", filepath)
+		result.Error = SanitizeError(fullError)
+		result.ExecutionTime = time.Since(startTime)
+		if auditLog != nil {
+			auditLog("open", filepath, false, fullError.Error())
+		}
+		return result
+	}
+
 	// Check file size
 	if fileInfo.Size() > cfg.MaxFileSize {
 		result.Success = false

@@ -187,6 +187,9 @@ func (a *App) GetSearchConfig() *search.SearchConfig {
 
 // Close cleans up app resources
 func (a *App) Close() error {
+	if a.session != nil {
+		a.session.Close()
+	}
 	if a.pool != nil {
 		return a.pool.Close()
 	}

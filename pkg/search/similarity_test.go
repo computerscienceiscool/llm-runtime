@@ -146,7 +146,10 @@ func TestSerializeEmbedding(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			serialized := serializeEmbedding(tt.embedding)
+			serialized, err := serializeEmbedding(tt.embedding)
+			if err != nil {
+				t.Fatalf("serializeEmbedding failed: %v", err)
+			}
 
 			// Check that we got the right number of bytes (4 bytes per float32)
 			expectedBytes := len(tt.embedding) * 4
@@ -223,7 +226,10 @@ func TestSerializeDeserializeRoundTrip(t *testing.T) {
 	}
 
 	// Serialize
-	serialized := serializeEmbedding(original)
+	serialized, err := serializeEmbedding(original)
+	if err != nil {
+		t.Fatalf("serializeEmbedding failed: %v", err)
+	}
 
 	// Deserialize
 	deserialized := deserializeEmbedding(serialized)
@@ -260,7 +266,10 @@ func TestSerializeDeserializeSpecialValues(t *testing.T) {
 		original[i] = float32(i) * 0.001
 	}
 
-	serialized := serializeEmbedding(original)
+	serialized, err := serializeEmbedding(original)
+	if err != nil {
+		t.Fatalf("serializeEmbedding failed: %v", err)
+	}
 	deserialized := deserializeEmbedding(serialized)
 
 	if deserialized == nil {
@@ -309,7 +318,7 @@ func BenchmarkSerializeEmbedding(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		serializeEmbedding(embedding)
+		_, _ = serializeEmbedding(embedding)
 	}
 }
 
@@ -318,7 +327,7 @@ func BenchmarkDeserializeEmbedding(b *testing.B) {
 	for i := range embedding {
 		embedding[i] = float32(i) * 0.01
 	}
-	data := serializeEmbedding(embedding)
+	data, _ := serializeEmbedding(embedding)
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {

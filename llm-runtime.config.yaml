@@ -67,7 +67,7 @@ commands:
     timeout_seconds: 30
     memory_limit: "512m"
     cpu_limit: 1
-    network_enabled: true
+    network_enabled: false
     whitelist:
       - "go test"
       - "go build" 

@@ -114,7 +114,7 @@ func (sc *SearchCommands) InitializeSearchIndex(excludedPaths []string, showProg
 		return err
 	}
 
-	if stats["total_files"] == "0" {
+	if stats["total_files"].(int64) == 0 {
 		fmt.Fprintf(os.Stderr, "No search index found. Building initial index...\n")
 		_, err = IndexRepository(
 			sc.engine.GetDB(),

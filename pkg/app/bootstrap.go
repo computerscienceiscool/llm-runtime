@@ -62,5 +62,6 @@ func Bootstrap(cfg *config.Config) (*App, error) {
 		session:   sess,
 		executor:  exec,
 		searchCfg: searchCfg,
+		pool:      pool,
 	}, nil
 }

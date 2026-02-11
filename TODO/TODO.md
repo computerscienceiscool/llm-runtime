@@ -9,20 +9,49 @@ Maintain zero-padded IDs starting at 001 and do not renumber. Keep only this ind
 - [ ] 004 - Resolve app test nil pointer issues.
 - [ ] 014 - Define approach for shell exec command injection protections (decide security modes and enforcement for exec whitelist vs shell flexibility; document outcome).
 - [ ] 018 - Speed up test suite (cache modules, reduce Docker-dependent cases, add fast paths/flags).
+- [ ] 028 - Fix scanner silently ignoring non-EOF read errors. `scanner.go:99-105` treats all errors the same as EOF when there is remaining line data -- disk errors, permission errors, etc. are swallowed.
 
 ## Medium Priority
 - [x] 005 - Add troubleshooting for common Ollama issues.
 - [ ] 006 - Document the config persona system when implemented.
 - [ ] 015 - Implement MCP integration (Model Context Protocol) for standardized LLM tool integration; document usage.
 - [ ] 016 - Add CLI project detection (`llm-runtime --auto`) to suggest configs based on repo type.
+- [ ] 031 - Add binary file detection in `evaluator/open.go`. Reading binary data produces garbled UTF-8 sent to the LLM. Detect via `net/http.DetectContentType` or null-byte scan and return a clear error.
+- [ ] 033 - Scanner buffer overflow silently aborts commands. When `checkBufferLimit()` fails in `StateWriteBody`/`StateExecBody`, the command is discarded and the scanner moves on with no error surfaced to the caller.
+- [ ] 043 - Escape pipe delimiters in audit log fields (`sandbox/audit.go:42-49`). Fields containing `|` corrupt the log format and could hide security events.
+- [ ] 044 - Add timeout to container cleanup in `pool.Close()` (`sandbox/pool.go:404`). Uses `context.Background()` with no deadline; hangs indefinitely if Docker daemon is unresponsive.
+- [ ] 045 - Validate memory limit parsing in `sandbox/container.go:183-199`. `parseMemoryLimit()` silently returns 0 (unlimited) on invalid input like `"512x"` or `"abc"`.
 
 ## Low Priority
 - [x] 008 - Add example workflows in `docs/examples/`.
 - [ ] 009 - Add architecture diagrams as images in documentation.
 - [ ] 010 - Implement streaming output for large command results.
 - [ ] 017 - Add additional commands: `<git status>`, `<git diff>`, `<tree>`, `<grep pattern>` for richer repo introspection.
+- [ ] 036 - Add scanner timeout / context support. `Scanner.Scan()` blocks indefinitely on `ReadString('\n')` with no way to cancel.
+- [ ] 037 - Scanner processes input byte-by-byte (`scanner.go:108`), which may split multi-byte UTF-8 characters. Consider rune-based iteration for correctness with non-ASCII content.
+- [ ] 038 - Add concurrent audit log tests. `session.LogAudit` has no synchronization; multiple goroutines writing to the same logger can interleave entries.
+- [ ] 046 - Validate path length against `MaxPathLength` constant in `sandbox/path.go`. The constant is defined in `config/constants.go` but never checked in `ValidatePath()`.
+- [ ] 047 - Fix race condition in container pool `Return()` method (`sandbox/pool.go:176-228`). Check-then-act on `p.closed` without holding the lock; pool can close between check and container return.
+- [ ] 048 - Add timeout to health check loop context (`sandbox/pool.go:333`). Uses `context.Background()` with no cancellation; can block indefinitely during container inspection.
+- [ ] 050 - Remove or implement `--io-containerized` flag. Makefile `test-io-container` target references this flag but it is not defined anywhere in the CLI.
+- [ ] 051 - Wire `ExecNetworkEnabled` config flag to container creation or document that network is always disabled. Currently all container code hardcodes `NetworkMode: "none"`. Config default corrected to `false` in `llm-runtime.config.yaml`.
 
 ## DONE
+- [x] 024 - Fix container pool not assigned to App struct in bootstrap.go (pool created but never stored; leaked containers on shutdown).
+- [x] 025 - Fix audit log file descriptor never closed in session.go (added `auditFile` field, `Close()` method, and wired into `App.Close()`).
+- [x] 026 - Fix missing `rows.Err()` check after iteration in `search/engine.go`.
+- [x] 027 - Fix unchecked `binary.Write`/`binary.Read` errors in `search/similarity.go` (`serializeEmbedding` now returns error).
+- [x] 029 - Fix `removeFileInfo` errors silently dropped in `search/indexing.go`.
+- [x] 030 - Fix hardcoded audit log path in session.go (now reads from `config.AuditLogPath`).
+- [x] 032 - Add directory detection in `evaluator/open.go`. `ExecuteOpen` now checks `IsDir()` and returns `IS_DIRECTORY` error. Unskipped two tests.
+- [x] 034 - Remove dead code: `fullConfig` struct, `setFullConfigDefaults()`, and their tests from `config/defaults.go`, `config/types.go`, `config/defaults_test.go`.
+- [x] 035 - Remove leftover debug comment in `cli/config.go`.
+- [x] 039 - Update `Dockerfile.io` base image from `golang:1.22.2-alpine` to `alpine:3.21` (Go toolchain not needed for I/O container).
+- [x] 040 - Consolidate double `init()` in `cli/root.go` into a single function. Viper defaults and config file setup now run before Cobra flag registration.
+- [x] 041 - Fix `InitializeSearchIndex` never triggering: `commands.go:117` compared `int64` to string `"0"` (always false). Changed to `.(int64) == 0`.
+- [x] 042 - Replace fake content hash in `indexing.go:185`. Changed `fmt.Sprintf("%x", content)` to `fmt.Sprintf("%x", sha256.Sum256(content))`.
+- [x] 049 - Fix wrong build path in 5 scripts (`demo.sh`, `exec_demo.sh`, `write_demo.sh`, `example_usage.sh`, `security_test.sh`). Changed `go build -o llm-runtime main.go` to `go build -o llm-runtime ./cmd/llm-runtime`.
+- [x] 052 - Add missing Viper default for `io-timeout` in `config/defaults.go`. Without it, `viper.GetString("io-timeout")` returns empty string when no flag or config file value is set, causing `time.ParseDuration` to fail.
 - [x] 012 - Align exec defaults in docs/README with code (docs claimed exec always enabled and default image `python-go`; defaults disable exec and use `ubuntu:22.04`).
 - [x] 013 - Align search docs with code defaults (docs called for `nomic-embed-text` as default; defaults use `all-MiniLM-L6-v2`).
 - [x] 011 - Enforce `commands.exec.enabled` flag (Config lacked enable field and `ExecuteExec` ran regardless of config; added plumbing + guard + tests).
