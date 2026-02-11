@@ -209,8 +209,12 @@ func parseMemoryLimit(limit string) (int64, error) {
 	return 0, fmt.Errorf("invalid memory limit format (use e.g. '512m' or '1g'): %q", limit)
 }
 
-// demuxLogs separates stdout and stderr from Docker logs stream
+// demuxLogs separates stdout and stderr from Docker logs stream.
+// Both stdout and stderr writers must be non-nil.
 func demuxLogs(reader io.Reader, stdout, stderr io.Writer) error {
+	if stdout == nil || stderr == nil {
+		return fmt.Errorf("stdout and stderr writers must not be nil")
+	}
 	// Docker multiplexes stdout/stderr with 8-byte headers
 	// Header format: [stream_type, 0, 0, 0, size1, size2, size3, size4]
 	// stream_type: 1=stdout, 2=stderr
@@ -235,9 +239,13 @@ func demuxLogs(reader io.Reader, stdout, stderr io.Writer) error {
 
 		switch streamType {
 		case 1: // stdout
-			stdout.Write(payload)
+			if _, err := stdout.Write(payload); err != nil {
+				return fmt.Errorf("failed to write stdout: %w", err)
+			}
 		case 2: // stderr
-			stderr.Write(payload)
+			if _, err := stderr.Write(payload); err != nil {
+				return fmt.Errorf("failed to write stderr: %w", err)
+			}
 		}
 	}
 }

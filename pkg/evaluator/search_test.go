@@ -511,6 +511,7 @@ func TestFormatFileSizeForSearch_LargeFiles(t *testing.T) {
 		{1024 * 1024 * 1024 * 10, "GB"},          // 10 GB
 		{1024 * 1024 * 1024 * 1024, "TB"},        // 1 TB
 		{1024 * 1024 * 1024 * 1024 * 1024, "PB"}, // 1 PB
+		{1024 * 1024 * 1024 * 1024 * 1024 * 1024, "EB"}, // 1 EB (max unit)
 	}
 
 	for _, tt := range tests {

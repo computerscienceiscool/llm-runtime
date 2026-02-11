@@ -345,3 +345,46 @@ func BenchmarkReadFile_LargeFile_Containerized(b *testing.B) {
 		ReadFileInContainer(testFile, tmpDir, "alpine:latest", 5*time.Second, "128m", 1)
 	}
 }
+
+func TestReadDockerLogs_NilStdout(t *testing.T) {
+	err := readDockerLogs(strings.NewReader(""), nil)
+	if err == nil {
+		t.Error("expected error for nil stdout")
+	}
+	if !strings.Contains(err.Error(), "must not be nil") {
+		t.Errorf("unexpected error: %v", err)
+	}
+}
+
+func TestReadDockerLogs_EmptyStream(t *testing.T) {
+	var stdout strings.Builder
+	err := readDockerLogs(strings.NewReader(""), &stdout)
+	if err != nil {
+		t.Errorf("empty stream should return nil, got: %v", err)
+	}
+}
+
+func TestReadDockerLogs_WriteError(t *testing.T) {
+	// Build a valid Docker log frame: header(8 bytes) + payload
+	header := []byte{1, 0, 0, 0, 0, 0, 0, 5}
+	payload := []byte("hello")
+	frame := append(header, payload...)
+
+	stdout := &ioErrWriter{err: fmt.Errorf("disk full")}
+	err := readDockerLogs(strings.NewReader(string(frame)), stdout)
+	if err == nil {
+		t.Error("expected error when stdout write fails")
+	}
+	if !strings.Contains(err.Error(), "disk full") {
+		t.Errorf("expected 'disk full' in error, got: %v", err)
+	}
+}
+
+// ioErrWriter is an io.Writer that always returns an error.
+type ioErrWriter struct {
+	err error
+}
+
+func (w *ioErrWriter) Write(p []byte) (int, error) {
+	return 0, w.err
+}

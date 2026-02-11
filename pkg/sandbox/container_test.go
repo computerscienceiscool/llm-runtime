@@ -1963,3 +1963,60 @@ func TestContainerIO_WriteFileFromContainer(t *testing.T) {
 		}
 	}
 }
+
+func TestDemuxLogs_NilStdout(t *testing.T) {
+	var stderr strings.Builder
+	err := demuxLogs(strings.NewReader(""), nil, &stderr)
+	if err == nil {
+		t.Error("expected error for nil stdout")
+	}
+	if !strings.Contains(err.Error(), "must not be nil") {
+		t.Errorf("unexpected error: %v", err)
+	}
+}
+
+func TestDemuxLogs_NilStderr(t *testing.T) {
+	var stdout strings.Builder
+	err := demuxLogs(strings.NewReader(""), &stdout, nil)
+	if err == nil {
+		t.Error("expected error for nil stderr")
+	}
+	if !strings.Contains(err.Error(), "must not be nil") {
+		t.Errorf("unexpected error: %v", err)
+	}
+}
+
+func TestDemuxLogs_WriteError(t *testing.T) {
+	// Build a valid Docker log frame: header(8 bytes) + payload
+	// Stream type 1 (stdout), size 5 ("hello")
+	header := []byte{1, 0, 0, 0, 0, 0, 0, 5}
+	payload := []byte("hello")
+	frame := append(header, payload...)
+
+	stdout := &errWriter{err: fmt.Errorf("disk full")}
+	var stderr strings.Builder
+	err := demuxLogs(strings.NewReader(string(frame)), stdout, &stderr)
+	if err == nil {
+		t.Error("expected error when stdout write fails")
+	}
+	if !strings.Contains(err.Error(), "disk full") {
+		t.Errorf("expected 'disk full' in error, got: %v", err)
+	}
+}
+
+func TestDemuxLogs_EmptyStream(t *testing.T) {
+	var stdout, stderr strings.Builder
+	err := demuxLogs(strings.NewReader(""), &stdout, &stderr)
+	if err != nil {
+		t.Errorf("empty stream should return nil, got: %v", err)
+	}
+}
+
+// errWriter is an io.Writer that always returns an error.
+type errWriter struct {
+	err error
+}
+
+func (w *errWriter) Write(p []byte) (int, error) {
+	return 0, w.err
+}

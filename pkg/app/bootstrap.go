@@ -20,7 +20,6 @@ func Bootstrap(cfg *config.Config) (*App, error) {
 		return nil, fmt.Errorf("cannot resolve repository root: %w", err)
 	}
 	cfg.RepositoryRoot = absRoot
-	//	fmt.Printf("DEBUG bootstrap: RepositoryRoot = %s\n", cfg.RepositoryRoot)
 
 	// Verify repository root exists
 	if _, err := os.Stat(cfg.RepositoryRoot); err != nil {

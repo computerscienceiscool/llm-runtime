@@ -255,8 +255,12 @@ func parseMemoryLimitIO(limit string) (int64, error) {
 	return 0, fmt.Errorf("invalid memory limit format (use e.g. '512m' or '1g'): %q", limit)
 }
 
-// readDockerLogs reads Docker logs and extracts stdout
+// readDockerLogs reads Docker logs and extracts stdout.
+// The stdout writer must be non-nil.
 func readDockerLogs(reader io.Reader, stdout io.Writer) error {
+	if stdout == nil {
+		return fmt.Errorf("stdout writer must not be nil")
+	}
 	buf := make([]byte, 8)
 	for {
 		_, err := io.ReadFull(reader, buf)
@@ -274,7 +278,9 @@ func readDockerLogs(reader io.Reader, stdout io.Writer) error {
 			return err
 		}
 
-		stdout.Write(payload)
+		if _, err := stdout.Write(payload); err != nil {
+			return fmt.Errorf("failed to write output: %w", err)
+		}
 	}
 }
 

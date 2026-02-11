@@ -124,5 +124,9 @@ func formatFileSizeForSearch(size int64) string {
 		exp++
 	}
 
-	return fmt.Sprintf("%.1f %cB", float64(size)/float64(div), "KMGTPE"[exp])
+	const units = "KMGTPE"
+	if exp >= len(units) {
+		exp = len(units) - 1
+	}
+	return fmt.Sprintf("%.1f %cB", float64(size)/float64(div), units[exp])
 }
