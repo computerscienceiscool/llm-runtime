@@ -283,10 +283,24 @@ func TestAuditLogger_Log(t *testing.T) {
 			t.Fatalf("Failed to read log: %v", err)
 		}
 
-		// Log uses pipe as separator, so internal pipes might affect parsing
-		// But the log should still be written
-		if len(data) == 0 {
-			t.Error("Log should not be empty")
+		logContent := string(data)
+
+		// Pipe characters in fields should be escaped
+		if !strings.Contains(logContent, `path/with\|pipe\|chars`) {
+			t.Errorf("Pipe characters should be escaped in argument, got: %s", logContent)
+		}
+
+		if !strings.Contains(logContent, `error with \|pipe\|`) {
+			t.Errorf("Pipe characters should be escaped in error message, got: %s", logContent)
+		}
+
+		// Log line should still have exactly 6 unescaped pipe separators
+		line := strings.TrimSpace(logContent)
+		// Count unescaped pipes by removing escaped ones first
+		unescaped := strings.ReplaceAll(line, `\|`, "")
+		pipeCount := strings.Count(unescaped, "|")
+		if pipeCount != 5 {
+			t.Errorf("Expected 5 unescaped pipe separators, got %d in: %s", pipeCount, line)
 		}
 	})
 

@@ -150,26 +150,38 @@ func TestValidateIOContainer_NonExistentRepo(t *testing.T) {
 // TestParseMemoryLimitIO tests memory limit string parsing for IO containers
 func TestParseMemoryLimitIO(t *testing.T) {
 	tests := []struct {
-		name     string
-		limit    string
-		expected int64
+		name      string
+		limit     string
+		expected  int64
+		expectErr bool
 	}{
-		{"empty string", "", 0},
-		{"128 megabytes lowercase", "128m", 128 * 1024 * 1024},
-		{"128 megabytes uppercase", "128M", 128 * 1024 * 1024},
-		{"512 megabytes", "512m", 512 * 1024 * 1024},
-		{"1 gigabyte lowercase", "1g", 1 * 1024 * 1024 * 1024},
-		{"1 gigabyte uppercase", "1G", 1 * 1024 * 1024 * 1024},
-		{"2 gigabytes", "2g", 2 * 1024 * 1024 * 1024},
-		{"invalid format", "invalid", 0},
-		{"no suffix", "256", 0},
+		{"empty string", "", 0, false},
+		{"128 megabytes lowercase", "128m", 128 * 1024 * 1024, false},
+		{"128 megabytes uppercase", "128M", 128 * 1024 * 1024, false},
+		{"512 megabytes", "512m", 512 * 1024 * 1024, false},
+		{"1 gigabyte lowercase", "1g", 1 * 1024 * 1024 * 1024, false},
+		{"1 gigabyte uppercase", "1G", 1 * 1024 * 1024 * 1024, false},
+		{"2 gigabytes", "2g", 2 * 1024 * 1024 * 1024, false},
+		{"invalid format", "invalid", 0, true},
+		{"no suffix", "256", 0, true},
+		{"zero megabytes", "0m", 0, true},
+		{"negative megabytes", "-128m", 0, true},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := parseMemoryLimitIO(tt.limit)
-			if result != tt.expected {
-				t.Errorf("parseMemoryLimitIO(%q) = %d, want %d", tt.limit, result, tt.expected)
+			result, err := parseMemoryLimitIO(tt.limit)
+			if tt.expectErr {
+				if err == nil {
+					t.Errorf("parseMemoryLimitIO(%q) expected error, got nil", tt.limit)
+				}
+			} else {
+				if err != nil {
+					t.Errorf("parseMemoryLimitIO(%q) unexpected error: %v", tt.limit, err)
+				}
+				if result != tt.expected {
+					t.Errorf("parseMemoryLimitIO(%q) = %d, want %d", tt.limit, result, tt.expected)
+				}
 			}
 		})
 	}

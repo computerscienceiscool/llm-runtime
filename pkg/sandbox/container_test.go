@@ -622,27 +622,39 @@ func BenchmarkRunContainer_Echo(b *testing.B) {
 // TestParseMemoryLimit tests memory limit string parsing
 func TestParseMemoryLimit(t *testing.T) {
 	tests := []struct {
-		name     string
-		limit    string
-		expected int64
+		name      string
+		limit     string
+		expected  int64
+		expectErr bool
 	}{
-		{"empty string", "", 0},
-		{"128 megabytes lowercase", "128m", 128 * 1024 * 1024},
-		{"128 megabytes uppercase", "128M", 128 * 1024 * 1024},
-		{"512 megabytes", "512m", 512 * 1024 * 1024},
-		{"1 gigabyte lowercase", "1g", 1 * 1024 * 1024 * 1024},
-		{"1 gigabyte uppercase", "1G", 1 * 1024 * 1024 * 1024},
-		{"2 gigabytes", "2g", 2 * 1024 * 1024 * 1024},
-		{"invalid format", "invalid", 0},
-		{"no suffix", "256", 0},
-		{"kilobytes not supported", "1024k", 0},
+		{"empty string", "", 0, false},
+		{"128 megabytes lowercase", "128m", 128 * 1024 * 1024, false},
+		{"128 megabytes uppercase", "128M", 128 * 1024 * 1024, false},
+		{"512 megabytes", "512m", 512 * 1024 * 1024, false},
+		{"1 gigabyte lowercase", "1g", 1 * 1024 * 1024 * 1024, false},
+		{"1 gigabyte uppercase", "1G", 1 * 1024 * 1024 * 1024, false},
+		{"2 gigabytes", "2g", 2 * 1024 * 1024 * 1024, false},
+		{"invalid format", "invalid", 0, true},
+		{"no suffix", "256", 0, true},
+		{"kilobytes not supported", "1024k", 0, true},
+		{"zero megabytes", "0m", 0, true},
+		{"negative megabytes", "-128m", 0, true},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := parseMemoryLimit(tt.limit)
-			if result != tt.expected {
-				t.Errorf("parseMemoryLimit(%q) = %d, want %d", tt.limit, result, tt.expected)
+			result, err := parseMemoryLimit(tt.limit)
+			if tt.expectErr {
+				if err == nil {
+					t.Errorf("parseMemoryLimit(%q) expected error, got nil", tt.limit)
+				}
+			} else {
+				if err != nil {
+					t.Errorf("parseMemoryLimit(%q) unexpected error: %v", tt.limit, err)
+				}
+				if result != tt.expected {
+					t.Errorf("parseMemoryLimit(%q) = %d, want %d", tt.limit, result, tt.expected)
+				}
 			}
 		})
 	}
@@ -1385,11 +1397,10 @@ func TestResourceLimits_VariousMemorySizes(t *testing.T) {
 		{"512m", "512m", false},
 		{"1g", "1g", false},
 		{"2g", "2g", false},
-		// Note: Docker doesn't validate memory format at container creation
-		// These pass through without error
-		{"no_unit_passes", "128", false},
-		{"invalid_format_passes", "abc", false},
-		{"zero_passes", "0m", false},
+		// parseMemoryLimit now validates format before Docker sees it
+		{"no_unit_rejected", "128", true},
+		{"invalid_format_rejected", "abc", true},
+		{"zero_rejected", "0m", true},
 		{"negative", "-128m", true},
 	}
 	for _, tc := range testCases {

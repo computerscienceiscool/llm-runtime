@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -39,13 +40,16 @@ func (a *AuditLogger) Log(sessionID, command, argument string, success bool, err
 		status = "failed"
 	}
 
+	// Escape pipe characters to prevent log format corruption
+	escape := func(s string) string { return strings.ReplaceAll(s, "|", "\\|") }
+
 	logEntry := fmt.Sprintf("%s|session:%s|%s|%s|%s|%s",
 		time.Now().Format(time.RFC3339),
-		sessionID,
-		command,
-		argument,
+		escape(sessionID),
+		escape(command),
+		escape(argument),
 		status,
-		errorMsg,
+		escape(errorMsg),
 	)
 
 	a.logger.Println(logEntry)

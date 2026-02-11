@@ -4,9 +4,15 @@ import (
 	"fmt"
 	"path/filepath"
 	"strings"
+
+	"github.com/computerscienceiscool/llm-runtime/pkg/config"
 )
 
 func ValidatePath(requestedPath string, repositoryRoot string, excludedPaths []string) (string, error) {
+	if len(requestedPath) > config.MaxPathLength {
+		return "", fmt.Errorf("path exceeds maximum length (%d > %d)", len(requestedPath), config.MaxPathLength)
+	}
+
 	// Clean the path to resolve . and .. and remove redundant separators
 	cleanPath := filepath.Clean(requestedPath)
 

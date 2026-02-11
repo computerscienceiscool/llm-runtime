@@ -238,6 +238,11 @@ func (p *ContainerPool) createContainer(ctx context.Context) (*PooledContainer, 
 		User:  "1000:1000",
 	}
 
+	memoryBytes, err := parseMemoryLimit(p.config.MemoryLimit)
+	if err != nil {
+		return nil, fmt.Errorf("invalid pool config: %w", err)
+	}
+
 	hostConfig := &container.HostConfig{
 		Mounts: []mount.Mount{
 			{
@@ -249,7 +254,7 @@ func (p *ContainerPool) createContainer(ctx context.Context) (*PooledContainer, 
 		},
 		NetworkMode: "none",
 		Resources: container.Resources{
-			Memory:   parseMemoryLimit(p.config.MemoryLimit),
+			Memory:   memoryBytes,
 			NanoCPUs: int64(p.config.CPULimit) * 1000000000,
 		},
 		CapDrop:     []string{"ALL"},

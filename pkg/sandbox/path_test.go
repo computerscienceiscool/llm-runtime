@@ -349,6 +349,30 @@ func TestValidatePath_EdgeCases(t *testing.T) {
 	}
 }
 
+func TestValidatePath_MaxLength(t *testing.T) {
+	repoRoot := t.TempDir()
+
+	t.Run("path at maximum length is allowed", func(t *testing.T) {
+		// Build a path just at the limit (use relative path within repo)
+		longName := strings.Repeat("a", 4000) // well under MaxPathLength (4096)
+		_, err := ValidatePath(longName, repoRoot, nil)
+		if err != nil && strings.Contains(err.Error(), "maximum length") {
+			t.Errorf("Path at %d chars should not exceed limit, got: %v", len(longName), err)
+		}
+	})
+
+	t.Run("path exceeding maximum length is rejected", func(t *testing.T) {
+		longName := strings.Repeat("a", 5000) // over MaxPathLength (4096)
+		_, err := ValidatePath(longName, repoRoot, nil)
+		if err == nil {
+			t.Error("ValidatePath() expected error for path exceeding max length")
+		}
+		if err != nil && !strings.Contains(err.Error(), "maximum length") {
+			t.Errorf("Expected 'maximum length' error, got: %v", err)
+		}
+	})
+}
+
 // TestValidatePath_Issue1_EncodedSequences tests the fix for Issue #1
 // which uses filepath.Clean() to prevent bypass attacks
 // NOTE: Some of these tests will FAIL until Issue #1 fix is applied

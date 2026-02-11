@@ -35,11 +35,17 @@ func RunIOContainer(repoRoot, containerImage, command string, timeout time.Durat
 		User:       "1000:1000",
 	}
 
+	// Parse memory limit
+	memoryBytes, err := parseMemoryLimitIO(memLimit)
+	if err != nil {
+		return "", fmt.Errorf("invalid container config: %w", err)
+	}
+
 	// Configure host
 	hostConfig := &container.HostConfig{
 		NetworkMode: "none",
 		Resources: container.Resources{
-			Memory:   parseMemoryLimitIO(memLimit),
+			Memory:   memoryBytes,
 			NanoCPUs: int64(cpuLimit) * 1000000000,
 		},
 		Mounts: []mount.Mount{
@@ -139,10 +145,15 @@ func WriteFileInContainer(filePath, content, repoRoot, containerImage string, ti
 		User:       "1000:1000",
 	}
 
+	memoryBytes, err := parseMemoryLimitIO(memLimit)
+	if err != nil {
+		return fmt.Errorf("invalid container config: %w", err)
+	}
+
 	hostConfig := &container.HostConfig{
 		NetworkMode: "none",
 		Resources: container.Resources{
-			Memory:   parseMemoryLimitIO(memLimit),
+			Memory:   memoryBytes,
 			NanoCPUs: int64(cpuLimit) * 1000000000,
 		},
 		Mounts: []mount.Mount{
@@ -221,22 +232,27 @@ func ValidateIOContainer(repoRoot, containerImage string) error {
 	return nil
 }
 
-// parseMemoryLimitIO converts memory limit string to bytes (for io_container)
-func parseMemoryLimitIO(limit string) int64 {
+// parseMemoryLimitIO converts memory limit string to bytes (for io_container).
+// Returns an error for invalid formats instead of silently defaulting to 0 (unlimited).
+func parseMemoryLimitIO(limit string) (int64, error) {
 	if limit == "" {
-		return 0
+		return 0, nil
 	}
 	if strings.HasSuffix(limit, "m") || strings.HasSuffix(limit, "M") {
 		var mb int64
-		fmt.Sscanf(limit, "%d", &mb)
-		return mb * 1024 * 1024
+		if n, _ := fmt.Sscanf(limit, "%d", &mb); n != 1 || mb <= 0 {
+			return 0, fmt.Errorf("invalid memory limit: %q", limit)
+		}
+		return mb * 1024 * 1024, nil
 	}
 	if strings.HasSuffix(limit, "g") || strings.HasSuffix(limit, "G") {
 		var gb int64
-		fmt.Sscanf(limit, "%d", &gb)
-		return gb * 1024 * 1024 * 1024
+		if n, _ := fmt.Sscanf(limit, "%d", &gb); n != 1 || gb <= 0 {
+			return 0, fmt.Errorf("invalid memory limit: %q", limit)
+		}
+		return gb * 1024 * 1024 * 1024, nil
 	}
-	return 0
+	return 0, fmt.Errorf("invalid memory limit format (use e.g. '512m' or '1g'): %q", limit)
 }
 
 // readDockerLogs reads Docker logs and extracts stdout

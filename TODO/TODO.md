@@ -12,25 +12,20 @@ Maintain zero-padded IDs starting at 001 and do not renumber. Keep only this ind
 - [ ] 028 - Fix scanner silently ignoring non-EOF read errors. `scanner.go:99-105` treats all errors the same as EOF when there is remaining line data -- disk errors, permission errors, etc. are swallowed.
 
 ## Medium Priority
-- [x] 005 - Add troubleshooting for common Ollama issues.
 - [ ] 006 - Document the config persona system when implemented.
 - [ ] 015 - Implement MCP integration (Model Context Protocol) for standardized LLM tool integration; document usage.
 - [ ] 016 - Add CLI project detection (`llm-runtime --auto`) to suggest configs based on repo type.
 - [ ] 031 - Add binary file detection in `evaluator/open.go`. Reading binary data produces garbled UTF-8 sent to the LLM. Detect via `net/http.DetectContentType` or null-byte scan and return a clear error.
 - [ ] 033 - Scanner buffer overflow silently aborts commands. When `checkBufferLimit()` fails in `StateWriteBody`/`StateExecBody`, the command is discarded and the scanner moves on with no error surfaced to the caller.
-- [ ] 043 - Escape pipe delimiters in audit log fields (`sandbox/audit.go:42-49`). Fields containing `|` corrupt the log format and could hide security events.
 - [ ] 044 - Add timeout to container cleanup in `pool.Close()` (`sandbox/pool.go:404`). Uses `context.Background()` with no deadline; hangs indefinitely if Docker daemon is unresponsive.
-- [ ] 045 - Validate memory limit parsing in `sandbox/container.go:183-199`. `parseMemoryLimit()` silently returns 0 (unlimited) on invalid input like `"512x"` or `"abc"`.
 
 ## Low Priority
-- [x] 008 - Add example workflows in `docs/examples/`.
 - [ ] 009 - Add architecture diagrams as images in documentation.
 - [ ] 010 - Implement streaming output for large command results.
 - [ ] 017 - Add additional commands: `<git status>`, `<git diff>`, `<tree>`, `<grep pattern>` for richer repo introspection.
 - [ ] 036 - Add scanner timeout / context support. `Scanner.Scan()` blocks indefinitely on `ReadString('\n')` with no way to cancel.
 - [ ] 037 - Scanner processes input byte-by-byte (`scanner.go:108`), which may split multi-byte UTF-8 characters. Consider rune-based iteration for correctness with non-ASCII content.
 - [ ] 038 - Add concurrent audit log tests. `session.LogAudit` has no synchronization; multiple goroutines writing to the same logger can interleave entries.
-- [ ] 046 - Validate path length against `MaxPathLength` constant in `sandbox/path.go`. The constant is defined in `config/constants.go` but never checked in `ValidatePath()`.
 - [ ] 047 - Fix race condition in container pool `Return()` method (`sandbox/pool.go:176-228`). Check-then-act on `p.closed` without holding the lock; pool can close between check and container return.
 - [ ] 048 - Add timeout to health check loop context (`sandbox/pool.go:333`). Uses `context.Background()` with no cancellation; can block indefinitely during container inspection.
 - [ ] 050 - Remove or implement `--io-containerized` flag. Makefile `test-io-container` target references this flag but it is not defined anywhere in the CLI.
@@ -61,6 +56,9 @@ Maintain zero-padded IDs starting at 001 and do not renumber. Keep only this ind
 - [x] 022 - Improve `make help` output to list targets clearly and make `make` show the help menu.
 - [x] 023 - Document `make test-fast` usage in README/docs.
 - [x] 007 - Decide and document the container image validation approach (whitelist vs digest pinning vs patterns).
+- [x] 043 - Escape pipe delimiters in audit log fields (`sandbox/audit.go`). Added escape function to replace `|` with `\|` in all variable fields. Updated tests to verify escaping.
+- [x] 045 - Validate memory limit parsing in `sandbox/container.go` and `sandbox/io_container.go`. Both `parseMemoryLimit()` and `parseMemoryLimitIO()` now return `(int64, error)` and reject invalid formats. Updated all callers and tests.
+- [x] 046 - Validate path length against `MaxPathLength` constant in `sandbox/path.go`. Added check at top of `ValidatePath()`. Added tests.
 
 ## Other TODO Files
 - docs/TODO.md

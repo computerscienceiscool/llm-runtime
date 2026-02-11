@@ -72,11 +72,17 @@ func RunContainer(cfg ContainerConfig) (ContainerResult, error) {
 		containerConfig.StdinOnce = true
 	}
 
+	// Parse memory limit
+	memoryBytes, err := parseMemoryLimit(cfg.MemoryLimit)
+	if err != nil {
+		return result, fmt.Errorf("invalid container config: %w", err)
+	}
+
 	// Configure host (mounts, resources, security)
 	hostConfig := &container.HostConfig{
 		NetworkMode: "none",
 		Resources: container.Resources{
-			Memory:   parseMemoryLimit(cfg.MemoryLimit),
+			Memory:   memoryBytes,
 			NanoCPUs: int64(cfg.CPULimit) * 1000000000,
 		},
 		Mounts: []mount.Mount{
@@ -180,23 +186,27 @@ func RunContainer(cfg ContainerConfig) (ContainerResult, error) {
 	return result, nil
 }
 
-// parseMemoryLimit converts memory limit string (e.g., "512m") to bytes
-func parseMemoryLimit(limit string) int64 {
+// parseMemoryLimit converts memory limit string (e.g., "512m") to bytes.
+// Returns an error for invalid formats instead of silently defaulting to 0 (unlimited).
+func parseMemoryLimit(limit string) (int64, error) {
 	if limit == "" {
-		return 0
+		return 0, nil
 	}
-	// Simple parser for common formats
 	if strings.HasSuffix(limit, "m") || strings.HasSuffix(limit, "M") {
 		var mb int64
-		fmt.Sscanf(limit, "%d", &mb)
-		return mb * 1024 * 1024
+		if n, _ := fmt.Sscanf(limit, "%d", &mb); n != 1 || mb <= 0 {
+			return 0, fmt.Errorf("invalid memory limit: %q", limit)
+		}
+		return mb * 1024 * 1024, nil
 	}
 	if strings.HasSuffix(limit, "g") || strings.HasSuffix(limit, "G") {
 		var gb int64
-		fmt.Sscanf(limit, "%d", &gb)
-		return gb * 1024 * 1024 * 1024
+		if n, _ := fmt.Sscanf(limit, "%d", &gb); n != 1 || gb <= 0 {
+			return 0, fmt.Errorf("invalid memory limit: %q", limit)
+		}
+		return gb * 1024 * 1024 * 1024, nil
 	}
-	return 0
+	return 0, fmt.Errorf("invalid memory limit format (use e.g. '512m' or '1g'): %q", limit)
 }
 
 // demuxLogs separates stdout and stderr from Docker logs stream
