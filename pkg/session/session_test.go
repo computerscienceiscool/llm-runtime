@@ -1,9 +1,11 @@
 package session
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -362,4 +364,55 @@ func TestSession_AuditLogCreation(t *testing.T) {
 			t.Error("New entry should be appended")
 		}
 	})
+}
+
+func TestSession_LogAudit_Concurrent(t *testing.T) {
+	origDir, _ := os.Getwd()
+	tempDir := t.TempDir()
+	os.Chdir(tempDir)
+	defer os.Chdir(origDir)
+
+	cfg := &config.Config{}
+	session := NewSession(cfg)
+
+	const goroutines = 10
+	const writesPerGoroutine = 20
+
+	var wg sync.WaitGroup
+	wg.Add(goroutines)
+
+	for g := 0; g < goroutines; g++ {
+		go func(id int) {
+			defer wg.Done()
+			for i := 0; i < writesPerGoroutine; i++ {
+				session.LogAudit(
+					fmt.Sprintf("cmd_%d", id),
+					fmt.Sprintf("arg_%d_%d", id, i),
+					true,
+					"",
+				)
+			}
+		}(g)
+	}
+
+	wg.Wait()
+
+	data, err := os.ReadFile("audit.log")
+	if err != nil {
+		t.Fatalf("Failed to read audit log: %v", err)
+	}
+
+	lines := strings.Split(strings.TrimSpace(string(data)), "\n")
+	expected := goroutines * writesPerGoroutine
+	if len(lines) != expected {
+		t.Errorf("Expected %d log lines, got %d", expected, len(lines))
+	}
+
+	// Verify no lines are corrupted (each should have 6 pipe-delimited fields)
+	for i, line := range lines {
+		parts := strings.Split(line, "|")
+		if len(parts) != 6 {
+			t.Errorf("Line %d corrupted: expected 6 fields, got %d: %q", i, len(parts), line)
+		}
+	}
 }

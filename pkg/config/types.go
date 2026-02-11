@@ -25,7 +25,6 @@ type Config struct {
 	ExecMemoryLimit     string
 	ExecCPULimit        int
 	ExecContainerImage  string
-	ExecNetworkEnabled  bool
 	IOContainerImage    string
 	IOTimeout           time.Duration
 	IOMemoryLimit       string

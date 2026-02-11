@@ -59,7 +59,6 @@ func init() {
 	rootCmd.PersistentFlags().String("exec-memory", "512m", "Memory limit for containers")
 	rootCmd.PersistentFlags().Int("exec-cpu", 2, "CPU limit for containers")
 	rootCmd.PersistentFlags().String("exec-image", "ubuntu:22.04", "Docker image for exec commands")
-	rootCmd.PersistentFlags().Bool("exec-network", false, "Enable network access in containers")
 	rootCmd.PersistentFlags().StringSlice("exec-whitelist", []string{}, "Comma-separated list of allowed exec commands")
 
 	// I/O Containerization flags

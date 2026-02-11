@@ -192,9 +192,9 @@ commands:
 **Default**: `2`  
 **Description**: CPU cores limit for containers  
 
-### `commands.exec.network_enabled`
-**Default**: `false`  
-**Description**: Allow network access in containers (NOT recommended)  
+### Container Network Access
+Network access is always disabled for all containers (`NetworkMode: "none"`).
+This is a hardcoded security decision and cannot be overridden via configuration.
 
 ### `commands.exec.whitelist`
 **Default**: Go, Node.js, Python, Make, System commands  

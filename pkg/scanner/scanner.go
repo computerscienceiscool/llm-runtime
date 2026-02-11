@@ -2,6 +2,7 @@ package scanner
 
 import (
 	"bufio"
+	"fmt"
 	"io"
 	"strings"
 
@@ -178,7 +179,7 @@ func (s *Scanner) Scan() *Command {
 			case StateWriteBody:
 				// Protect against buffer overflow
 				if !s.checkBufferLimit() {
-					// Abort this command, reset, and continue scanning
+					s.lastErr = fmt.Errorf("BUFFER_OVERFLOW: write command exceeded %d byte limit", maxScannerBufferSize)
 					s.transitionTo(StateScanning)
 					s.resetCommand()
 					break // Exit switch, continue loop
@@ -224,7 +225,7 @@ func (s *Scanner) Scan() *Command {
 			case StateExecBody:
 				// Protect against buffer overflow
 				if !s.checkBufferLimit() {
-					// Abort this command, reset, and continue scanning
+					s.lastErr = fmt.Errorf("BUFFER_OVERFLOW: exec command exceeded %d byte limit", maxScannerBufferSize)
 					s.transitionTo(StateScanning)
 					s.resetCommand()
 					break // Exit switch, continue loop

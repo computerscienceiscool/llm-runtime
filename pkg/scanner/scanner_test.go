@@ -545,6 +545,36 @@ func (e *errReader) Read(p []byte) (int, error) {
 	return 0, fmt.Errorf("disk read error")
 }
 
+// TestScan_WriteBufferOverflow tests that buffer overflow sets Err()
+func TestScan_WriteBufferOverflow(t *testing.T) {
+	// Set up the scanner already in StateWriteBody with a nearly-full
+	// buffer, then feed a small amount of data to trigger the overflow.
+	// This avoids the O(n^2) cost of processing 10MB byte-by-byte through
+	// strings.Contains on every byte.
+	reader := bufio.NewReader(strings.NewReader("more data\n"))
+	sc := NewScanner(reader, false)
+
+	// Simulate state as if we already parsed "<write big.txt>"
+	sc.startCommand("write")
+	sc.transitionTo(StateWriteBody)
+
+	// Fill buffer to just under the limit
+	sc.buffer.WriteString(strings.Repeat("x", maxScannerBufferSize-1))
+
+	// Scan should hit the overflow on the next byte
+	cmd := sc.Scan()
+	if cmd != nil {
+		t.Fatalf("expected nil (discarded), got %+v", cmd)
+	}
+
+	if sc.Err() == nil {
+		t.Fatal("Err() should be non-nil after buffer overflow")
+	}
+	if !strings.Contains(sc.Err().Error(), "BUFFER_OVERFLOW") {
+		t.Errorf("Err() should contain BUFFER_OVERFLOW, got: %v", sc.Err())
+	}
+}
+
 // Benchmark tests
 func BenchmarkScan_SimpleOpen(b *testing.B) {
 	input := "<open README.md>\n"

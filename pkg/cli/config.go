@@ -52,7 +52,6 @@ func buildConfig() (*config.Config, error) {
 		ExecMemoryLimit:     viper.GetString("exec-memory"),
 		ExecCPULimit:        viper.GetInt("exec-cpu"),
 		ExecContainerImage:  viper.GetString("exec-image"),
-		ExecNetworkEnabled:  viper.GetBool("exec-network"),
 		IOContainerImage:    viper.GetString("io-image"),
 		IOMemoryLimit:       viper.GetString("io-memory"),
 		IOCPULimit:          viper.GetInt("io-cpu"),

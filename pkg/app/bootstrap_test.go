@@ -356,7 +356,6 @@ func TestBootstrap_PreservesAllConfigFields(t *testing.T) {
 		ExecMemoryLimit:     "1g",
 		ExecCPULimit:        4,
 		ExecContainerImage:  "golang:latest",
-		ExecNetworkEnabled:  true,
 	}
 
 	app, err := Bootstrap(cfg)
@@ -396,9 +395,6 @@ func TestBootstrap_PreservesAllConfigFields(t *testing.T) {
 	}
 	if appCfg.ForceWrite != cfg.ForceWrite {
 		t.Errorf("ForceWrite = %v, want %v", appCfg.ForceWrite, cfg.ForceWrite)
-	}
-	if appCfg.ExecNetworkEnabled != cfg.ExecNetworkEnabled {
-		t.Errorf("ExecNetworkEnabled = %v, want %v", appCfg.ExecNetworkEnabled, cfg.ExecNetworkEnabled)
 	}
 }
 

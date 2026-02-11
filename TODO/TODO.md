@@ -11,7 +11,6 @@ Maintain zero-padded IDs starting at 001 and do not renumber. Keep only this ind
 - [ ] 006 - Document the config persona system when implemented.
 - [ ] 015 - Implement MCP integration (Model Context Protocol) for standardized LLM tool integration; document usage.
 - [ ] 016 - Add CLI project detection (`llm-runtime --auto`) to suggest configs based on repo type.
-- [ ] 033 - Scanner buffer overflow silently aborts commands. When `checkBufferLimit()` fails in `StateWriteBody`/`StateExecBody`, the command is discarded and the scanner moves on with no error surfaced to the caller.
 
 ## Low Priority
 - [ ] 009 - Add architecture diagrams as images in documentation.
@@ -19,8 +18,6 @@ Maintain zero-padded IDs starting at 001 and do not renumber. Keep only this ind
 - [ ] 017 - Add additional commands: `<git status>`, `<git diff>`, `<tree>`, `<grep pattern>` for richer repo introspection.
 - [ ] 036 - Add scanner timeout / context support. `Scanner.Scan()` blocks indefinitely on `ReadString('\n')` with no way to cancel.
 - [ ] 037 - Scanner processes input byte-by-byte (`scanner.go:108`), which may split multi-byte UTF-8 characters. Consider rune-based iteration for correctness with non-ASCII content.
-- [ ] 038 - Add concurrent audit log tests. `session.LogAudit` has no synchronization; multiple goroutines writing to the same logger can interleave entries.
-- [ ] 051 - Wire `ExecNetworkEnabled` config flag to container creation or document that network is always disabled. Currently all container code hardcodes `NetworkMode: "none"`. Config default corrected to `false` in `llm-runtime.config.yaml`.
 
 ## DONE
 - [x] 024 - Fix container pool not assigned to App struct in bootstrap.go (pool created but never stored; leaked containers on shutdown).
@@ -59,6 +56,9 @@ Maintain zero-padded IDs starting at 001 and do not renumber. Keep only this ind
 - [x] 003 - Closed as stale. All 22 scanner tests pass; mid-line matching was already resolved.
 - [x] 028 - Add `Err()` method to Scanner (bufio.Scanner pattern). Non-EOF read errors are now stored and retrievable after `Scan()` returns nil. Caller in `app.go` updated to check and log.
 - [x] 047 - Fix race condition in pool `Return()`. Hold write lock across closed check and channel send so `Close()` cannot close the channel between them. Removed dead `ctx.Done()` select case.
+- [x] 033 - Surface scanner buffer overflow errors. `checkBufferLimit()` failures in `StateWriteBody`/`StateExecBody` now set `lastErr` with a `BUFFER_OVERFLOW` message instead of silently discarding.
+- [x] 038 - Add concurrent audit log test. 10 goroutines x 20 writes with `-race` flag verifies no interleaving or corruption.
+- [x] 051 - Remove misleading `ExecNetworkEnabled` config flag. Network is always disabled (`NetworkMode: "none"`) by design. Removed field from config struct, CLI flag, and config file. Documented in config docs.
 
 ## Other TODO Files
 - docs/TODO.md
