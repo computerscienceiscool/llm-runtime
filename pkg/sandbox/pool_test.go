@@ -11,6 +11,9 @@ func TestNewContainerPool(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Skipping Docker-dependent test in short mode")
 	}
+	if !dockerAvailable() {
+		t.Skip("Docker not available")
+	}
 
 	ctx := context.Background()
 	cfg := PoolConfig{
@@ -41,6 +44,9 @@ func TestNewContainerPool(t *testing.T) {
 func TestPoolGetReturn(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Skipping Docker-dependent test in short mode")
+	}
+	if !dockerAvailable() {
+		t.Skip("Docker not available")
 	}
 
 	ctx := context.Background()
@@ -108,6 +114,9 @@ func TestPoolRecycling(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Skipping Docker-dependent test in short mode")
 	}
+	if !dockerAvailable() {
+		t.Skip("Docker not available")
+	}
 
 	ctx := context.Background()
 	cfg := PoolConfig{
@@ -162,6 +171,9 @@ func TestPoolRecycling(t *testing.T) {
 func TestPoolConcurrency(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Skipping Docker-dependent test in short mode")
+	}
+	if !dockerAvailable() {
+		t.Skip("Docker not available")
 	}
 
 	ctx := context.Background()
@@ -221,6 +233,9 @@ func TestPoolConcurrency(t *testing.T) {
 func TestPoolClose(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Skipping Docker-dependent test in short mode")
+	}
+	if !dockerAvailable() {
+		t.Skip("Docker not available")
 	}
 
 	ctx := context.Background()

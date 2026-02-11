@@ -59,6 +59,7 @@ func newTestConfig(tmpDir string) *config.Config {
 }
 
 func TestExecuteOpen_Success(t *testing.T) {
+	if !dockerAvailable() { t.Skip("Docker not available") }
 	tmpDir := t.TempDir()
 	cfg := newTestConfig(tmpDir)
 
@@ -103,6 +104,7 @@ func TestExecuteOpen_Success(t *testing.T) {
 }
 
 func TestExecuteOpen_AbsolutePath(t *testing.T) {
+	if !dockerAvailable() { t.Skip("Docker not available") }
 	tmpDir := t.TempDir()
 	cfg := newTestConfig(tmpDir)
 
@@ -265,6 +267,7 @@ func TestExecuteOpen_FileTooLarge(t *testing.T) {
 }
 
 func TestExecuteOpen_EmptyFile(t *testing.T) {
+	if !dockerAvailable() { t.Skip("Docker not available") }
 	tmpDir := t.TempDir()
 	cfg := newTestConfig(tmpDir)
 
@@ -311,6 +314,7 @@ func TestExecuteOpen_BinaryContent(t *testing.T) {
 }
 
 func TestExecuteOpen_NestedDirectory(t *testing.T) {
+	if !dockerAvailable() { t.Skip("Docker not available") }
 	tmpDir := t.TempDir()
 	cfg := newTestConfig(tmpDir)
 
@@ -338,6 +342,7 @@ func TestExecuteOpen_NestedDirectory(t *testing.T) {
 }
 
 func TestExecuteOpen_NilAuditLog(t *testing.T) {
+	if !dockerAvailable() { t.Skip("Docker not available") }
 	tmpDir := t.TempDir()
 	cfg := newTestConfig(tmpDir)
 
@@ -451,6 +456,7 @@ func TestExecuteOpen_DirectoryInsteadOfFile(t *testing.T) {
 }
 
 func TestExecuteOpen_MaxFileSizeBoundary(t *testing.T) {
+	if !dockerAvailable() { t.Skip("Docker not available") }
 	tmpDir := t.TempDir()
 	cfg := newTestConfig(tmpDir)
 	cfg.MaxFileSize = 100
@@ -488,6 +494,7 @@ func TestExecuteOpen_MaxFileSizeBoundary(t *testing.T) {
 }
 
 func TestExecuteOpen_AuditLogContents(t *testing.T) {
+	if !dockerAvailable() { t.Skip("Docker not available") }
 	tmpDir := t.TempDir()
 	cfg := newTestConfig(tmpDir)
 

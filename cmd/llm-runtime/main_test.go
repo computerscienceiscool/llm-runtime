@@ -8,6 +8,11 @@ import (
 	"testing"
 )
 
+func dockerAvailable() bool {
+	cmd := exec.Command("docker", "version")
+	return cmd.Run() == nil
+}
+
 // TestMainPackageBuilds verifies the main package compiles correctly
 func TestMainPackageBuilds(t *testing.T) {
 	cmd := exec.Command("go", "build", "-o", os.DevNull, ".")
@@ -101,6 +106,7 @@ func TestBootstrapWithInvalidRoot(t *testing.T) {
 
 // TestPipeMode verifies basic pipe mode functionality
 func TestPipeMode(t *testing.T) {
+	if !dockerAvailable() { t.Skip("Docker not available") }
 	binary := buildTestBinary(t)
 	defer os.Remove(binary)
 

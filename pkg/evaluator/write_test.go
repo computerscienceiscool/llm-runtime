@@ -284,6 +284,7 @@ func TestCalculateContentHash_DifferentInputs(t *testing.T) {
 }
 
 func TestExecuteWrite_CreateNewFile(t *testing.T) {
+	if !dockerAvailable() { t.Skip("Docker not available") }
 	tmpDir := t.TempDir()
 	cfg := newTestConfig(tmpDir)
 
@@ -325,6 +326,7 @@ func TestExecuteWrite_CreateNewFile(t *testing.T) {
 }
 
 func TestExecuteWrite_UpdateExistingFile(t *testing.T) {
+	if !dockerAvailable() { t.Skip("Docker not available") }
 	tmpDir := t.TempDir()
 	cfg := newTestConfig(tmpDir)
 	cfg.BackupBeforeWrite = false // Disable backup for this test
@@ -366,6 +368,7 @@ func TestExecuteWrite_UpdateExistingFile(t *testing.T) {
 }
 
 func TestExecuteWrite_WithBackup(t *testing.T) {
+	if !dockerAvailable() { t.Skip("Docker not available") }
 	tmpDir := t.TempDir()
 	cfg := newTestConfig(tmpDir)
 	cfg.BackupBeforeWrite = true
@@ -400,6 +403,7 @@ func TestExecuteWrite_WithBackup(t *testing.T) {
 }
 
 func TestExecuteWrite_NoBackupForNewFile(t *testing.T) {
+	if !dockerAvailable() { t.Skip("Docker not available") }
 	tmpDir := t.TempDir()
 	cfg := newTestConfig(tmpDir)
 	cfg.BackupBeforeWrite = true
@@ -490,6 +494,7 @@ func TestExecuteWrite_ContentTooLarge(t *testing.T) {
 }
 
 func TestExecuteWrite_CreatesDirectories(t *testing.T) {
+	if !dockerAvailable() { t.Skip("Docker not available") }
 	tmpDir := t.TempDir()
 	cfg := newTestConfig(tmpDir)
 
@@ -518,6 +523,7 @@ func TestExecuteWrite_CreatesDirectories(t *testing.T) {
 }
 
 func TestExecuteWrite_GoFileFormatting(t *testing.T) {
+	if !dockerAvailable() { t.Skip("Docker not available") }
 	tmpDir := t.TempDir()
 	cfg := newTestConfig(tmpDir)
 
@@ -565,6 +571,7 @@ func TestExecuteWrite_JSONFileFormatting(t *testing.T) {
 }
 
 func TestExecuteWrite_EmptyContent(t *testing.T) {
+	if !dockerAvailable() { t.Skip("Docker not available") }
 	tmpDir := t.TempDir()
 	cfg := newTestConfig(tmpDir)
 
@@ -615,6 +622,7 @@ func TestExecuteWrite_ExcludedPaths(t *testing.T) {
 }
 
 func TestExecuteWrite_NilAuditLog(t *testing.T) {
+	if !dockerAvailable() { t.Skip("Docker not available") }
 	tmpDir := t.TempDir()
 	cfg := newTestConfig(tmpDir)
 
@@ -627,6 +635,7 @@ func TestExecuteWrite_NilAuditLog(t *testing.T) {
 }
 
 func TestExecuteWrite_AtomicWrite(t *testing.T) {
+	if !dockerAvailable() { t.Skip("Docker not available") }
 	tmpDir := t.TempDir()
 	cfg := newTestConfig(tmpDir)
 	cfg.BackupBeforeWrite = false
@@ -665,6 +674,7 @@ func TestExecuteWrite_AtomicWrite(t *testing.T) {
 }
 
 func TestExecuteWrite_MaxWriteSizeBoundary(t *testing.T) {
+	if !dockerAvailable() { t.Skip("Docker not available") }
 	tmpDir := t.TempDir()
 	cfg := newTestConfig(tmpDir)
 	cfg.MaxWriteSize = 100
@@ -698,6 +708,7 @@ func TestExecuteWrite_MaxWriteSizeBoundary(t *testing.T) {
 }
 
 func TestExecuteWrite_AuditLogContents(t *testing.T) {
+	if !dockerAvailable() { t.Skip("Docker not available") }
 	tmpDir := t.TempDir()
 	cfg := newTestConfig(tmpDir)
 	cfg.BackupBeforeWrite = false
@@ -731,6 +742,7 @@ func TestExecuteWrite_AuditLogContents(t *testing.T) {
 }
 
 func TestExecuteWrite_AuditLogWithBackup(t *testing.T) {
+	if !dockerAvailable() { t.Skip("Docker not available") }
 	tmpDir := t.TempDir()
 	cfg := newTestConfig(tmpDir)
 	cfg.BackupBeforeWrite = true
@@ -772,6 +784,7 @@ func TestExecuteWrite_ExecutionTimeTracking(t *testing.T) {
 }
 
 func TestExecuteWrite_AllowedExtensionsEmpty(t *testing.T) {
+	if !dockerAvailable() { t.Skip("Docker not available") }
 	tmpDir := t.TempDir()
 	cfg := newTestConfig(tmpDir)
 	cfg.AllowedExtensions = []string{} // No restrictions
@@ -784,6 +797,7 @@ func TestExecuteWrite_AllowedExtensionsEmpty(t *testing.T) {
 }
 
 func TestExecuteWrite_CaseInsensitiveExtension(t *testing.T) {
+	if !dockerAvailable() { t.Skip("Docker not available") }
 	tmpDir := t.TempDir()
 	cfg := newTestConfig(tmpDir)
 	cfg.AllowedExtensions = []string{".txt"}

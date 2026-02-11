@@ -5,6 +5,7 @@ Maintain zero-padded IDs starting at 001 and do not renumber. Keep only this ind
 ## High Priority
 - [ ] 014 - Define approach for shell exec command injection protections (decide security modes and enforcement for exec whitelist vs shell flexibility; document outcome).
 - [ ] 018 - Speed up test suite (cache modules, reduce Docker-dependent cases, add fast paths/flags).
+- [ ] 060 - Set up Docker access for test environment. Add current user to `docker` group (`sudo usermod -aG docker $USER`) or configure rootless Docker so Docker-dependent tests in `cmd/llm-runtime`, `pkg/app`, `pkg/evaluator`, and `pkg/sandbox` can actually run.
 ## Medium Priority
 - [ ] 006 - Document the config persona system when implemented.
 - [ ] 015 - Implement MCP integration (Model Context Protocol) for standardized LLM tool integration; document usage.
@@ -64,6 +65,7 @@ Maintain zero-padded IDs starting at 001 and do not renumber. Keep only this ind
 - [x] 056 - Remove unused `pool` parameter from `ExecuteExec` and `ExecuteSearch`. Updated signatures, callers in `executor.go`, and all test call sites.
 - [x] 057 - Remove 7 unused constants from `constants.go`: `DefaultContainerCPUs`, `AuditLogMaxSize`, `AuditLogMaxBackups`, `AuditLogMaxAge`, `MaxSessionsPerUser`, `MaxBackups`, `BackupExtension`.
 - [x] 058 - Hoist compiled regexes in `errors.go` to package-level `var` block. `sanitizePaths` and `sanitizeUserInfo` no longer recompile on every call.
+- [x] 059 - Add `t.Skip` guards to all Docker-dependent tests. Added `dockerAvailable()` helpers and skip checks to 40 tests across 7 files. `go test ./...` now passes clean without Docker.
 
 ## Other TODO Files
 - docs/TODO.md

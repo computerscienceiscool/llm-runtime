@@ -87,6 +87,7 @@ func TestNewExecutor_NilAuditLog(t *testing.T) {
 }
 
 func TestExecutor_Execute_OpenCommand(t *testing.T) {
+	if !dockerAvailable() { t.Skip("Docker not available") }
 	tmpDir := t.TempDir()
 	cfg := newTestConfig(tmpDir)
 
@@ -120,6 +121,7 @@ func TestExecutor_Execute_OpenCommand(t *testing.T) {
 }
 
 func TestExecutor_Execute_WriteCommand(t *testing.T) {
+	if !dockerAvailable() { t.Skip("Docker not available") }
 	tmpDir := t.TempDir()
 	cfg := newTestConfig(tmpDir)
 	cfg.BackupBeforeWrite = false
@@ -287,6 +289,7 @@ func TestExecutor_Execute_EmptyCommandType(t *testing.T) {
 }
 
 func TestExecutor_GetCommandsRun(t *testing.T) {
+	if !dockerAvailable() { t.Skip("Docker not available") }
 	tmpDir := t.TempDir()
 	cfg := newTestConfig(tmpDir)
 
@@ -452,6 +455,7 @@ func TestExecutor_WithAuditLog(t *testing.T) {
 }
 
 func TestExecutor_MultipleCommands(t *testing.T) {
+	if !dockerAvailable() { t.Skip("Docker not available") }
 	tmpDir := t.TempDir()
 	cfg := newTestConfig(tmpDir)
 	cfg.BackupBeforeWrite = false
@@ -643,6 +647,7 @@ func TestExecutor_Issue5_ErrorSanitization(t *testing.T) {
 // Integration-style tests
 
 func TestExecutor_FullWorkflow(t *testing.T) {
+	if !dockerAvailable() { t.Skip("Docker not available") }
 	tmpDir := t.TempDir()
 	cfg := newTestConfig(tmpDir)
 	cfg.BackupBeforeWrite = true

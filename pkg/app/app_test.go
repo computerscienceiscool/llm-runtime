@@ -6,12 +6,18 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
 
 	"github.com/computerscienceiscool/llm-runtime/pkg/config"
 )
+
+func dockerAvailable() bool {
+	cmd := exec.Command("docker", "version")
+	return cmd.Run() == nil
+}
 
 // captureStderr captures stderr during function execution
 func captureStderr(t *testing.T, f func()) string {
@@ -172,6 +178,7 @@ func TestApp_GetSearchConfig(t *testing.T) {
 }
 
 func TestApp_Run_PipeMode_Stdin(t *testing.T) {
+	if !dockerAvailable() { t.Skip("Docker not available") }
 	tempDir := t.TempDir()
 
 	// Create a test file to open
@@ -228,6 +235,7 @@ func TestApp_Run_PipeMode_Stdin(t *testing.T) {
 }
 
 func TestApp_Run_PipeMode_InputFile(t *testing.T) {
+	if !dockerAvailable() { t.Skip("Docker not available") }
 	tempDir := t.TempDir()
 
 	// Create a test file to open
@@ -273,6 +281,7 @@ func TestApp_Run_PipeMode_InputFile(t *testing.T) {
 }
 
 func TestApp_Run_PipeMode_OutputFile(t *testing.T) {
+	if !dockerAvailable() { t.Skip("Docker not available") }
 	tempDir := t.TempDir()
 
 	// Create a test file to open
@@ -532,6 +541,7 @@ func TestApp_Run_NoCommands(t *testing.T) {
 	}
 }
 func TestApp_Run_WriteCommand(t *testing.T) {
+	if !dockerAvailable() { t.Skip("Docker not available") }
 	tempDir := t.TempDir()
 
 	// Create input file with write command
@@ -613,6 +623,7 @@ func TestApp_Run_EmptyInput(t *testing.T) {
 }
 
 func TestApp_MultipleRuns(t *testing.T) {
+	if !dockerAvailable() { t.Skip("Docker not available") }
 	tempDir := t.TempDir()
 
 	// Create test file
@@ -663,6 +674,7 @@ func TestApp_MultipleRuns(t *testing.T) {
 // REMOVED: TestApp_Run_VerboseMode_ExecDisabled - exec is always enabled in container mode
 
 func TestApp_Run_InteractiveMode(t *testing.T) {
+	if !dockerAvailable() { t.Skip("Docker not available") }
 	tempDir := t.TempDir()
 
 	// Create a test file
@@ -856,6 +868,7 @@ func TestApp_GettersAfterMultipleOperations(t *testing.T) {
 }
 
 func TestApp_Run_LargeInput(t *testing.T) {
+	if !dockerAvailable() { t.Skip("Docker not available") }
 	tempDir := t.TempDir()
 
 	// Create a large input with many commands
@@ -951,6 +964,7 @@ func TestApp_Run_PipeMode_StdinError(t *testing.T) {
 }
 
 func TestApp_Run_WithAllCommandTypes(t *testing.T) {
+	if !dockerAvailable() { t.Skip("Docker not available") }
 	tempDir := t.TempDir()
 
 	// Create a file to open
@@ -1115,6 +1129,7 @@ func TestApp_ExecutorSearchConfig(t *testing.T) {
 }
 
 func TestApp_Run_OutputToFile_Success(t *testing.T) {
+	if !dockerAvailable() { t.Skip("Docker not available") }
 	tempDir := t.TempDir()
 
 	// Create input with a simple command
