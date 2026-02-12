@@ -65,7 +65,7 @@ func ExecuteExec(cmd scanner.Command, cfg *config.Config, auditLog func(cmdType,
 	}
 
 	// Pull Docker image if needed
-	if err := sandbox.PullDockerImage(cfg.ExecContainerImage, cfg.Verbose); err != nil {
+	if err := sandbox.PullDockerImage(cfg.ExecContainerImage); err != nil {
 		result.Success = false
 		fullError := fmt.Errorf("DOCKER_IMAGE: %w", err)
 		result.Error = SanitizeError(fullError) // ← Sanitized

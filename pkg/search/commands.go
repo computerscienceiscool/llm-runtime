@@ -148,7 +148,7 @@ func CheckOllamaSetup(ollamaURL string) error {
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != 200 {
+	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("Ollama responded with status %d", resp.StatusCode)
 	}
 

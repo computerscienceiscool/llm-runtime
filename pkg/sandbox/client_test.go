@@ -38,7 +38,7 @@ func TestPullDockerImage_Integration(t *testing.T) {
 
 	// Use a very small image that's likely already cached
 	// alpine is small and commonly used
-	err := PullDockerImage("alpine:latest", false)
+	err := PullDockerImage("alpine:latest")
 	if err != nil {
 		t.Logf("PullDockerImage failed (may be network issue): %v", err)
 		// Don't fail - might be network restricted environment
@@ -51,7 +51,7 @@ func TestPullDockerImage_InvalidImage(t *testing.T) {
 	}
 
 	// Try to pull a nonexistent image
-	err := PullDockerImage("nonexistent-image-xyz123:nosuchtag", false)
+	err := PullDockerImage("nonexistent-image-xyz123:nosuchtag")
 	if err == nil {
 		t.Error("expected error for nonexistent image")
 	}
@@ -62,7 +62,7 @@ func TestPullDockerImage_EmptyImageName(t *testing.T) {
 		t.Skip("Docker not available, skipping integration test")
 	}
 
-	err := PullDockerImage("", false)
+	err := PullDockerImage("")
 	if err == nil {
 		t.Error("expected error for empty image name")
 	}
@@ -75,24 +75,12 @@ func TestPullDockerImage_CachedImage(t *testing.T) {
 
 	// First pull to ensure image is cached
 	image := "alpine:latest"
-	PullDockerImage(image, false) // Ignore error, might already be cached
+	PullDockerImage(image) // Ignore error, might already be cached
 
 	// Second pull should be fast (image exists locally)
-	err := PullDockerImage(image, false)
+	err := PullDockerImage(image)
 	if err != nil {
 		t.Errorf("PullDockerImage failed for cached image: %v", err)
-	}
-}
-
-func TestPullDockerImage_VerboseMode(t *testing.T) {
-	if !dockerAvailable() {
-		t.Skip("Docker not available, skipping integration test")
-	}
-
-	// Test with verbose=true - should not change behavior, just logging
-	err := PullDockerImage("alpine:latest", true)
-	if err != nil {
-		t.Logf("PullDockerImage verbose failed (may be network issue): %v", err)
 	}
 }
 
@@ -109,7 +97,7 @@ func TestPullDockerImage_InvalidImageFormat(t *testing.T) {
 
 	for _, img := range invalidImages {
 		t.Run(img, func(t *testing.T) {
-			err := PullDockerImage(img, false)
+			err := PullDockerImage(img)
 			// We expect these to fail, but some registries might be lenient
 			t.Logf("PullDockerImage(%q): %v", img, err)
 		})
@@ -133,10 +121,10 @@ func BenchmarkPullDockerImage_Cached(b *testing.B) {
 	}
 
 	// Ensure image is cached first
-	PullDockerImage("alpine:latest", false)
+	PullDockerImage("alpine:latest")
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		PullDockerImage("alpine:latest", false)
+		PullDockerImage("alpine:latest")
 	}
 }

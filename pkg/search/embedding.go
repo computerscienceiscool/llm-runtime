@@ -45,7 +45,10 @@ func generateEmbedding(ollamaURL string, text string, model string) ([]float32, 
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		body, _ := io.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return nil, fmt.Errorf("Ollama API error (status %d): failed to read response body", resp.StatusCode)
+		}
 		return nil, fmt.Errorf("Ollama API error (status %d): %s", resp.StatusCode, string(body))
 	}
 

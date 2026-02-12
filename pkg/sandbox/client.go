@@ -27,7 +27,7 @@ func CheckDockerAvailability() error {
 }
 
 // PullDockerImage ensures the required image is available
-func PullDockerImage(image string, verbose bool) error {
+func PullDockerImage(image string) error {
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		return fmt.Errorf("failed to create Docker client: %w", err)
@@ -49,7 +49,7 @@ func PullDockerImage(image string, verbose bool) error {
 	}
 	defer reader.Close()
 
-	// Discard the pull output (unless verbose)
+	// Discard the pull output
 	_, err = io.Copy(io.Discard, reader)
 	if err != nil {
 		return fmt.Errorf("failed to pull Docker image: %w", err)

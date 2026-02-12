@@ -18,7 +18,7 @@ func isDockerAvailable() bool {
 // Helper to ensure test image is available
 func ensureTestImage(t *testing.T) {
 	t.Helper()
-	if err := PullDockerImage("alpine:latest", false); err != nil {
+	if err := PullDockerImage("alpine:latest"); err != nil {
 		t.Skipf("Could not pull test image: %v", err)
 	}
 }

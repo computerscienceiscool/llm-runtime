@@ -27,9 +27,6 @@ const (
 	// Audit log configuration
 	DefaultAuditLogPath = "audit.log"
 
-	// Session configuration
-	DefaultSessionTimeout = 24 * time.Hour // Session timeout duration
-
 	// Container pool defaults
 	DefaultPoolSize            = 10
 	DefaultMaxUsesPerContainer = 100

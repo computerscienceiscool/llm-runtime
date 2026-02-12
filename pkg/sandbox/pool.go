@@ -85,7 +85,7 @@ func NewContainerPool(ctx context.Context, cfg PoolConfig) (*ContainerPool, erro
 	}
 
 	// Pull image if needed
-	if err := PullDockerImage(cfg.Image, false); err != nil {
+	if err := PullDockerImage(cfg.Image); err != nil {
 		cli.Close()
 		return nil, fmt.Errorf("failed to pull image %s: %w", cfg.Image, err)
 	}

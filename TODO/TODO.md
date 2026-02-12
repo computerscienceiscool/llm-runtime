@@ -85,6 +85,10 @@ Maintain zero-padded IDs starting at 001 and do not renumber. Keep only this ind
 - [x] 077 - Check `session.Close()` error in `app.Close()` (`app/app.go`). Now collects both session and pool close errors using `errors.Join`.
 - [x] 078 - Remove stale `.backup` files tracked in git (`pkg/config/defaults.go.backup`, `defaults_test.go.backup`, `types.go.backup`).
 - [x] 079 - Fix pool `healthCheckLoop` deadlock on shutdown (`sandbox/pool.go`). Added `done chan struct{}` to `ContainerPool`. `Close()` closes the channel before `ticker.Stop()`. `healthCheckLoop` select now has `case <-p.done: return` so the goroutine exits promptly.
+- [x] 080 - Remove unused `verbose` parameter from `PullDockerImage` (`sandbox/client.go`). Removed parameter, fixed stale comment, updated callers in `pool.go`, `exec.go`, and all test call sites. Removed `TestPullDockerImage_VerboseMode` test.
+- [x] 081 - Remove duplicate `checkOllamaAvailability` from `cli/commands.go`. Had `runCheckOllama` call `search.CheckOllamaSetup` instead. Fixed `CheckOllamaSetup` to use `http.StatusOK` instead of hardcoded `200`. Removed `net/http` import from CLI. Removed redundant CLI tests.
+- [x] 082 - Remove unused `DefaultSessionTimeout` constant from `config/constants.go`. Never referenced anywhere.
+- [x] 083 - Check `io.ReadAll` error in `search/embedding.go`. Now returns a fallback error message if body read fails instead of silently using empty body.
 
 ## Other TODO Files
 - docs/TODO.md

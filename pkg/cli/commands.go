@@ -2,7 +2,6 @@ package cli
 
 import (
 	"fmt"
-	"net/http"
 	"os"
 
 	"github.com/computerscienceiscool/llm-runtime/pkg/config"
@@ -167,7 +166,7 @@ func runCheckOllama(cmd *cobra.Command, args []string) error {
 
 	fmt.Fprintf(os.Stderr, "Checking Ollama setup for search functionality...\n")
 
-	if err := checkOllamaAvailability(searchCfg.OllamaURL); err != nil {
+	if err := search.CheckOllamaSetup(searchCfg.OllamaURL); err != nil {
 		fmt.Fprintf(os.Stderr, "\nOllama not available at %s\n", searchCfg.OllamaURL)
 		fmt.Fprintf(os.Stderr, "Please install and start Ollama:\n")
 		fmt.Fprintf(os.Stderr, "  curl -fsSL https://ollama.com/install.sh | sh\n")
@@ -178,21 +177,6 @@ func runCheckOllama(cmd *cobra.Command, args []string) error {
 
 	fmt.Fprintf(os.Stderr, "Ollama is running at %s\n", searchCfg.OllamaURL)
 	fmt.Fprintf(os.Stderr, "\nSearch functionality is ready to use!\n")
-
-	return nil
-}
-
-// checkOllamaAvailability verifies Ollama is running and accessible
-func checkOllamaAvailability(ollamaURL string) error {
-	resp, err := http.Get(ollamaURL + "/api/tags")
-	if err != nil {
-		return fmt.Errorf("cannot connect to Ollama: %w", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != 200 {
-		return fmt.Errorf("Ollama responded with status %d", resp.StatusCode)
-	}
 
 	return nil
 }
