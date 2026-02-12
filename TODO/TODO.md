@@ -17,6 +17,23 @@ Maintain zero-padded IDs starting at 001 and do not renumber. Keep only this ind
 - [ ] 017 - Add additional commands: `<git status>`, `<git diff>`, `<tree>`, `<grep pattern>` for richer repo introspection.
 - [ ] 036 - Add scanner timeout / context support. `Scanner.Scan()` blocks indefinitely on `ReadString('\n')` with no way to cancel.
 - [ ] 037 - Scanner processes input byte-by-byte (`scanner.go:108`), which may split multi-byte UTF-8 characters. Consider rune-based iteration for correctness with non-ASCII content.
+- [ ] 084 - Remove unused `ContainerID` field from `ExecutionResult` struct (`pkg/scanner/types.go`). Field is set but never read by any caller.
+- [ ] 085 - Remove unused `StartPos`, `EndPos`, `Original` fields from `Command` struct (`pkg/scanner/types.go`). Fields are never set or read.
+- [ ] 086 - Remove unused `SearchResult.Relevance` field and `GetRelevanceLabel` function (`pkg/search/results.go`). Relevance is never set; callers use `Score` instead.
+- [ ] 087 - Fix `filepath` variable shadowing imported `path/filepath` package in `database.go:112`. Rename local variable to avoid shadow.
+- [ ] 088 - Fix wrong I/O timeout default in README (line 291) and docs (`configuration.md:44,277,417`). Docs say `60s`; actual default is `30s` (`DefaultIOTimeout` in `constants.go:13`).
+- [ ] 089 - Fix wrong container pool defaults in README (lines 27-30, 614-623) and `container-pooling.md`. Docs say `size: 5`, `startup_containers: 2`, `health_check_interval: 60s`; actual defaults are `10`, `3`, `30s` (`constants.go:31-35`).
+- [ ] 090 - Fix wrong default exec whitelist in README (lines 296-328). Lists 20+ commands; actual default is `["go test", "go build", "npm test", "make"]` (`defaults.go:48`).
+- [ ] 091 - Clarify `python-go` image references across README and 14 doc files. No Dockerfile or build target exists for this image. It is an undefined external image presented as if part of the project.
+- [ ] 092 - Fix broken references in README: `docs/installation.md` should be `docs/installation-guide.md` (line 754); `./security_test.sh` and `./write_demo.sh` should be `scripts/` (lines 553, 569); `examples/` directory does not exist (line 876); `internal/core/` and `docs/.index/` are empty dirs in project structure (lines 88-93); duplicate numbering "5." in Contributing (lines 863-864).
+- [ ] 093 - Remove stale config fields from docs. `chunk_size`/`chunk_overlap` in `quick-reference.md:147-148` and `llm-runtime-overview.md:147-148` (removed in 075). `ollama_timeout` in `troubleshooting.md:307`, `quick-reference.md:146`, `llm-runtime-overview.md:146` (never existed in code).
+- [ ] 094 - Delete `docs/llm-runtime-overview.md`. It is a duplicate of `docs/quick-reference.md`. Keep `quick-reference.md`.
+- [ ] 095 - Fix exec mount read-only claim in README (line 279). Single-use exec containers are read-only, but pooled containers are read-write. README does not distinguish.
+- [ ] 096 - Fix stale package paths in `CLAUDE.md` (lines 133-139). Shows `internal/app`, `internal/cli`, `internal/config`, `internal/search`, `internal/session` but all live under `pkg/`. Also stale refs at lines 202, 348-349 (`internal/config/defaults.go` should be `pkg/config/defaults.go`).
+- [ ] 097 - Fix wrong subcommand syntax across README and 10+ doc files. Docs show `./llm-runtime --reindex` but CLI uses subcommands: `./llm-runtime reindex`, `search-validate`, `search-status`, `search-cleanup`, `search-update`, `check-ollama`.
+- [ ] 098 - Fix stale default whitelist in `docs/SYSTEM_PROMPT.md` (lines 56-62). Lists 20+ commands across Go/Node/Python/Rust/system; actual default is `["go test", "go build", "npm test", "make"]`.
+- [ ] 099 - Update `docs/index.md` after deleting `llm-runtime-overview.md` (094). Remove references and redirect to `quick-reference.md`.
+- [ ] 100 - Clean up `docs/TODO.md`. Container image validation (line 51) marked pending but was completed (007). Several items duplicate main `TODO/TODO.md`.
 
 ## DONE
 - [x] 024 - Fix container pool not assigned to App struct in bootstrap.go (pool created but never stored; leaked containers on shutdown).
