@@ -165,7 +165,7 @@ func TestSearchCommands_Search_NoOllama(t *testing.T) {
 	cfg := &SearchConfig{
 		Enabled:      true,
 		VectorDBPath: filepath.Join(tmpDir, "test.db"),
-		OllamaURL:   "http://localhost:99999",
+		OllamaURL:    "http://localhost:99999",
 		MaxResults:   10,
 	}
 
@@ -317,7 +317,7 @@ func TestSearchCommands_InitializeSearchIndex_EmptyRepo(t *testing.T) {
 	cfg := &SearchConfig{
 		Enabled:      true,
 		VectorDBPath: filepath.Join(tmpDir, "test.db"),
-		OllamaURL:   "http://localhost:99999", // Will fail to index
+		OllamaURL:    "http://localhost:99999", // Will fail to index
 	}
 
 	sc, err := NewSearchCommands(cfg, tmpDir)
@@ -440,7 +440,7 @@ func TestSearchCommands_HandleReindex_NoOllama(t *testing.T) {
 	cfg := &SearchConfig{
 		Enabled:      true,
 		VectorDBPath: filepath.Join(tmpDir, "test.db"),
-		OllamaURL:   "http://localhost:99999",
+		OllamaURL:    "http://localhost:99999",
 	}
 
 	sc, err := NewSearchCommands(cfg, tmpDir)
@@ -467,7 +467,7 @@ func TestSearchCommands_HandleSearchUpdate_NoOllama(t *testing.T) {
 	cfg := &SearchConfig{
 		Enabled:      true,
 		VectorDBPath: filepath.Join(tmpDir, "test.db"),
-		OllamaURL:   "http://localhost:99999",
+		OllamaURL:    "http://localhost:99999",
 	}
 
 	sc, err := NewSearchCommands(cfg, tmpDir)

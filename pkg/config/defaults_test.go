@@ -22,11 +22,9 @@ func TestGetDefaultSearchConfig(t *testing.T) {
 		{"Enabled", cfg.Enabled, false},
 		{"VectorDBPath", cfg.VectorDBPath, "./embeddings.db"},
 		{"EmbeddingModel", cfg.EmbeddingModel, "nomic-embed-text"},
-		{"EmbeddingDimensions", cfg.EmbeddingDimensions, DefaultEmbeddingDims},
 		{"MaxResults", cfg.MaxResults, DefaultMaxSearchResults},
 		{"MinSimilarityScore", cfg.MinSimilarityScore, DefaultMinSimilarity},
 		{"MaxPreviewLength", cfg.MaxPreviewLength, 100},
-		{"ChunkSize", cfg.ChunkSize, 1000},
 		{"OllamaURL", cfg.OllamaURL, "http://localhost:11434"},
 		{"MaxFileSize", cfg.MaxFileSize, int64(DefaultMaxFileSize)},
 	}
@@ -185,7 +183,6 @@ func TestLoadSearchConfig_PartialOverride(t *testing.T) {
 
 	// Override only some values
 	viper.Set("commands.search.max_results", 50)
-	viper.Set("commands.search.chunk_size", 2000)
 
 	cfg := LoadSearchConfig()
 	defaultCfg := getDefaultSearchConfig()
@@ -193,10 +190,6 @@ func TestLoadSearchConfig_PartialOverride(t *testing.T) {
 	// Overridden values
 	if cfg.MaxResults != 50 {
 		t.Errorf("MaxResults = %d, want 50", cfg.MaxResults)
-	}
-
-	if cfg.ChunkSize != 2000 {
-		t.Errorf("ChunkSize = %d, want 2000", cfg.ChunkSize)
 	}
 
 	// Non-overridden values should still be defaults

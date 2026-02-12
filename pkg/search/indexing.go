@@ -303,8 +303,8 @@ func CleanupIndex(db *sql.DB, repoRoot string) error {
 
 // ValidateIndex checks the integrity of the search index
 func ValidateIndex(db *sql.DB, repoRoot string) error {
-	// Check if all indexed files still exist and have correct hashes
-	rows, err := db.Query("SELECT filepath, content_hash, last_modified FROM embeddings")
+	// Check if all indexed files still exist and have expected modification times
+	rows, err := db.Query("SELECT filepath, last_modified FROM embeddings")
 	if err != nil {
 		return err
 	}
@@ -312,10 +312,10 @@ func ValidateIndex(db *sql.DB, repoRoot string) error {
 
 	issues := 0
 	for rows.Next() {
-		var filePath, storedHash string
+		var filePath string
 		var storedModTime int64
 
-		if err := rows.Scan(&filePath, &storedHash, &storedModTime); err != nil {
+		if err := rows.Scan(&filePath, &storedModTime); err != nil {
 			return err
 		}
 
@@ -327,6 +327,10 @@ func ValidateIndex(db *sql.DB, repoRoot string) error {
 			fmt.Fprintf(os.Stderr, "Missing file: %s\n", filePath)
 			issues++
 			continue
+		} else if err != nil {
+			fmt.Fprintf(os.Stderr, "Cannot stat file: %s: %v\n", filePath, err)
+			issues++
+			continue
 		}
 
 		// Check modification time
@@ -335,6 +339,10 @@ func ValidateIndex(db *sql.DB, repoRoot string) error {
 			issues++
 			continue
 		}
+	}
+
+	if err := rows.Err(); err != nil {
+		return fmt.Errorf("error iterating index rows: %w", err)
 	}
 
 	if issues > 0 {

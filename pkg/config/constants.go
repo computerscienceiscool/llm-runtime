@@ -19,7 +19,6 @@ const (
 	// Search configuration
 	DefaultMaxSearchResults = 10  // Maximum number of search results to return
 	DefaultMinSimilarity    = 0.7 // Minimum similarity score for search results
-	DefaultEmbeddingDims    = 768 // Default embedding dimensions (nomic-embed-text)
 
 	// Validation limits
 	MaxCommandLength = 1000 // Maximum length for exec commands

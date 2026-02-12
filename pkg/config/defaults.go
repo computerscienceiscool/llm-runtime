@@ -8,17 +8,15 @@ import (
 // GetDefaultSearchConfig returns default search configuration
 func getDefaultSearchConfig() *search.SearchConfig {
 	return &search.SearchConfig{
-		Enabled:             false,
-		VectorDBPath:        "./embeddings.db",
-		EmbeddingModel:      "nomic-embed-text",
-		EmbeddingDimensions: DefaultEmbeddingDims,
-		MaxResults:          DefaultMaxSearchResults,
-		MinSimilarityScore:  DefaultMinSimilarity,
-		MaxPreviewLength:    100,
-		ChunkSize:           1000,
-		OllamaURL:           "http://localhost:11434",
-		IndexExtensions:     []string{".go", ".py", ".js", ".md", ".txt", ".yaml", ".json"},
-		MaxFileSize:         int64(DefaultMaxFileSize),
+		Enabled:            false,
+		VectorDBPath:       "./embeddings.db",
+		EmbeddingModel:     "nomic-embed-text",
+		MaxResults:         DefaultMaxSearchResults,
+		MinSimilarityScore: DefaultMinSimilarity,
+		MaxPreviewLength:   100,
+		OllamaURL:          "http://localhost:11434",
+		IndexExtensions:    []string{".go", ".py", ".js", ".md", ".txt", ".yaml", ".json"},
+		MaxFileSize:        int64(DefaultMaxFileSize),
 	}
 }
 
@@ -53,11 +51,9 @@ func SetViperDefaults() {
 	viper.SetDefault("commands.search.enabled", false)
 	viper.SetDefault("commands.search.vector_db_path", "./embeddings.db")
 	viper.SetDefault("commands.search.embedding_model", "nomic-embed-text")
-	viper.SetDefault("commands.search.embedding_dimensions", DefaultEmbeddingDims)
 	viper.SetDefault("commands.search.max_results", DefaultMaxSearchResults)
 	viper.SetDefault("commands.search.min_similarity_score", DefaultMinSimilarity)
 	viper.SetDefault("commands.search.max_preview_length", 100)
-	viper.SetDefault("commands.search.chunk_size", 1000)
 	viper.SetDefault("commands.search.ollama_url", "http://localhost:11434")
 	viper.SetDefault("commands.search.index_extensions", []string{".go", ".py", ".js", ".md", ".txt", ".yaml", ".json"})
 	viper.SetDefault("commands.search.max_file_size", DefaultMaxFileSize)
@@ -87,7 +83,6 @@ func SetViperDefaults() {
 	viper.SetDefault("container_pool.startup_containers", DefaultStartupContainers)
 }
 
-
 // LoadSearchConfig loads search configuration from viper (config file + defaults)
 func LoadSearchConfig() *search.SearchConfig {
 	cfg := getDefaultSearchConfig()
@@ -102,9 +97,6 @@ func LoadSearchConfig() *search.SearchConfig {
 	if viper.IsSet("commands.search.embedding_model") {
 		cfg.EmbeddingModel = viper.GetString("commands.search.embedding_model")
 	}
-	if viper.IsSet("commands.search.embedding_dimensions") {
-		cfg.EmbeddingDimensions = viper.GetInt("commands.search.embedding_dimensions")
-	}
 	if viper.IsSet("commands.search.max_results") {
 		cfg.MaxResults = viper.GetInt("commands.search.max_results")
 	}
@@ -113,9 +105,6 @@ func LoadSearchConfig() *search.SearchConfig {
 	}
 	if viper.IsSet("commands.search.max_preview_length") {
 		cfg.MaxPreviewLength = viper.GetInt("commands.search.max_preview_length")
-	}
-	if viper.IsSet("commands.search.chunk_size") {
-		cfg.ChunkSize = viper.GetInt("commands.search.chunk_size")
 	}
 	if viper.IsSet("commands.search.ollama_url") {
 		cfg.OllamaURL = viper.GetString("commands.search.ollama_url")

@@ -1,7 +1,6 @@
 package app
 
 import (
-	"time"
 	"bytes"
 	"fmt"
 	"io"
@@ -10,6 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/computerscienceiscool/llm-runtime/pkg/config"
 )
@@ -75,7 +75,7 @@ func TestApp_GetConfig(t *testing.T) {
 		AllowedExtensions: []string{".txt"},
 		ExcludedPaths:     []string{".git"},
 		IOTimeout:         60 * time.Second,
-		IOContainerImage:    "llm-runtime-io:latest",
+		IOContainerImage:  "llm-runtime-io:latest",
 	}
 
 	app, err := Bootstrap(cfg)
@@ -103,7 +103,7 @@ func TestApp_GetSession(t *testing.T) {
 		AllowedExtensions: []string{".txt"},
 		ExcludedPaths:     []string{".git"},
 		IOTimeout:         60 * time.Second,
-		IOContainerImage:    "llm-runtime-io:latest",
+		IOContainerImage:  "llm-runtime-io:latest",
 	}
 
 	app, err := Bootstrap(cfg)
@@ -135,7 +135,7 @@ func TestApp_GetExecutor(t *testing.T) {
 		AllowedExtensions: []string{".txt"},
 		ExcludedPaths:     []string{".git"},
 		IOTimeout:         60 * time.Second,
-		IOContainerImage:    "llm-runtime-io:latest",
+		IOContainerImage:  "llm-runtime-io:latest",
 	}
 
 	app, err := Bootstrap(cfg)
@@ -163,7 +163,7 @@ func TestApp_GetSearchConfig(t *testing.T) {
 		AllowedExtensions: []string{".txt"},
 		ExcludedPaths:     []string{".git"},
 		IOTimeout:         60 * time.Second,
-		IOContainerImage:    "llm-runtime-io:latest",
+		IOContainerImage:  "llm-runtime-io:latest",
 	}
 
 	app, err := Bootstrap(cfg)
@@ -178,7 +178,9 @@ func TestApp_GetSearchConfig(t *testing.T) {
 }
 
 func TestApp_Run_PipeMode_Stdin(t *testing.T) {
-	if !dockerAvailable() { t.Skip("Docker not available") }
+	if !dockerAvailable() {
+		t.Skip("Docker not available")
+	}
 	tempDir := t.TempDir()
 
 	// Create a test file to open
@@ -194,7 +196,7 @@ func TestApp_Run_PipeMode_Stdin(t *testing.T) {
 		AllowedExtensions: []string{".txt"},
 		ExcludedPaths:     []string{".git"},
 		IOTimeout:         60 * time.Second,
-		IOContainerImage:    "llm-runtime-io:latest",
+		IOContainerImage:  "llm-runtime-io:latest",
 		Interactive:       false,
 		// No InputFile - should read from stdin
 	}
@@ -235,7 +237,9 @@ func TestApp_Run_PipeMode_Stdin(t *testing.T) {
 }
 
 func TestApp_Run_PipeMode_InputFile(t *testing.T) {
-	if !dockerAvailable() { t.Skip("Docker not available") }
+	if !dockerAvailable() {
+		t.Skip("Docker not available")
+	}
 	tempDir := t.TempDir()
 
 	// Create a test file to open
@@ -257,7 +261,7 @@ func TestApp_Run_PipeMode_InputFile(t *testing.T) {
 		AllowedExtensions: []string{".txt"},
 		ExcludedPaths:     []string{".git"},
 		IOTimeout:         60 * time.Second,
-		IOContainerImage:    "llm-runtime-io:latest",
+		IOContainerImage:  "llm-runtime-io:latest",
 		Interactive:       false,
 		InputFile:         inputFile,
 	}
@@ -281,7 +285,9 @@ func TestApp_Run_PipeMode_InputFile(t *testing.T) {
 }
 
 func TestApp_Run_PipeMode_OutputFile(t *testing.T) {
-	if !dockerAvailable() { t.Skip("Docker not available") }
+	if !dockerAvailable() {
+		t.Skip("Docker not available")
+	}
 	tempDir := t.TempDir()
 
 	// Create a test file to open
@@ -305,7 +311,7 @@ func TestApp_Run_PipeMode_OutputFile(t *testing.T) {
 		AllowedExtensions: []string{".txt"},
 		ExcludedPaths:     []string{".git"},
 		IOTimeout:         60 * time.Second,
-		IOContainerImage:    "llm-runtime-io:latest",
+		IOContainerImage:  "llm-runtime-io:latest",
 		Interactive:       false,
 		InputFile:         inputFile,
 		OutputFile:        outputFile,
@@ -342,7 +348,7 @@ func TestApp_Run_PipeMode_NonExistentInputFile(t *testing.T) {
 		AllowedExtensions: []string{".txt"},
 		ExcludedPaths:     []string{".git"},
 		IOTimeout:         60 * time.Second,
-		IOContainerImage:    "llm-runtime-io:latest",
+		IOContainerImage:  "llm-runtime-io:latest",
 		Interactive:       false,
 		InputFile:         "/nonexistent/input.txt",
 	}
@@ -378,7 +384,7 @@ func TestApp_Run_PipeMode_CannotWriteOutputFile(t *testing.T) {
 		AllowedExtensions: []string{".txt"},
 		ExcludedPaths:     []string{".git"},
 		IOTimeout:         60 * time.Second,
-		IOContainerImage:    "llm-runtime-io:latest",
+		IOContainerImage:  "llm-runtime-io:latest",
 		Interactive:       false,
 		InputFile:         inputFile,
 		OutputFile:        "/nonexistent/directory/output.txt",
@@ -461,8 +467,8 @@ func TestApp_Run_VerboseMode_ExecDetails(t *testing.T) {
 		MaxWriteSize:       102400,
 		AllowedExtensions:  []string{".txt"},
 		ExcludedPaths:      []string{".git"},
-		IOTimeout:         60 * time.Second,
-		IOContainerImage:    "llm-runtime-io:latest",
+		IOTimeout:          60 * time.Second,
+		IOContainerImage:   "llm-runtime-io:latest",
 		Interactive:        false,
 		Verbose:            true,
 		ExecWhitelist:      []string{"go test", "make"},
@@ -517,7 +523,7 @@ func TestApp_Run_NoCommands(t *testing.T) {
 		AllowedExtensions: []string{".txt"},
 		ExcludedPaths:     []string{".git"},
 		IOTimeout:         60 * time.Second,
-		IOContainerImage:    "llm-runtime-io:latest",
+		IOContainerImage:  "llm-runtime-io:latest",
 		Interactive:       false,
 		InputFile:         inputFile,
 		OutputFile:        outputFile,
@@ -541,7 +547,9 @@ func TestApp_Run_NoCommands(t *testing.T) {
 	}
 }
 func TestApp_Run_WriteCommand(t *testing.T) {
-	if !dockerAvailable() { t.Skip("Docker not available") }
+	if !dockerAvailable() {
+		t.Skip("Docker not available")
+	}
 	tempDir := t.TempDir()
 
 	// Create input file with write command
@@ -557,7 +565,7 @@ func TestApp_Run_WriteCommand(t *testing.T) {
 		AllowedExtensions: []string{".txt"},
 		ExcludedPaths:     []string{".git"},
 		IOTimeout:         60 * time.Second,
-		IOContainerImage:    "llm-runtime-io:latest",
+		IOContainerImage:  "llm-runtime-io:latest",
 		Interactive:       false,
 		InputFile:         inputFile,
 	}
@@ -606,7 +614,7 @@ func TestApp_Run_EmptyInput(t *testing.T) {
 		AllowedExtensions: []string{".txt"},
 		ExcludedPaths:     []string{".git"},
 		IOTimeout:         60 * time.Second,
-		IOContainerImage:    "llm-runtime-io:latest",
+		IOContainerImage:  "llm-runtime-io:latest",
 		Interactive:       false,
 		InputFile:         inputFile,
 	}
@@ -623,7 +631,9 @@ func TestApp_Run_EmptyInput(t *testing.T) {
 }
 
 func TestApp_MultipleRuns(t *testing.T) {
-	if !dockerAvailable() { t.Skip("Docker not available") }
+	if !dockerAvailable() {
+		t.Skip("Docker not available")
+	}
 	tempDir := t.TempDir()
 
 	// Create test file
@@ -645,7 +655,7 @@ func TestApp_MultipleRuns(t *testing.T) {
 		AllowedExtensions: []string{".txt"},
 		ExcludedPaths:     []string{".git"},
 		IOTimeout:         60 * time.Second,
-		IOContainerImage:    "llm-runtime-io:latest",
+		IOContainerImage:  "llm-runtime-io:latest",
 		Interactive:       false,
 		InputFile:         inputFile,
 	}
@@ -674,7 +684,9 @@ func TestApp_MultipleRuns(t *testing.T) {
 // REMOVED: TestApp_Run_VerboseMode_ExecDisabled - exec is always enabled in container mode
 
 func TestApp_Run_InteractiveMode(t *testing.T) {
-	if !dockerAvailable() { t.Skip("Docker not available") }
+	if !dockerAvailable() {
+		t.Skip("Docker not available")
+	}
 	tempDir := t.TempDir()
 
 	// Create a test file
@@ -690,7 +702,7 @@ func TestApp_Run_InteractiveMode(t *testing.T) {
 		AllowedExtensions: []string{".txt"},
 		ExcludedPaths:     []string{".git"},
 		IOTimeout:         60 * time.Second,
-		IOContainerImage:    "llm-runtime-io:latest",
+		IOContainerImage:  "llm-runtime-io:latest",
 		Interactive:       true, // Enable interactive mode
 	}
 
@@ -827,7 +839,7 @@ func TestApp_GettersAfterMultipleOperations(t *testing.T) {
 		AllowedExtensions: []string{".txt"},
 		ExcludedPaths:     []string{".git"},
 		IOTimeout:         60 * time.Second,
-		IOContainerImage:    "llm-runtime-io:latest",
+		IOContainerImage:  "llm-runtime-io:latest",
 	}
 
 	app, err := Bootstrap(cfg)
@@ -868,7 +880,9 @@ func TestApp_GettersAfterMultipleOperations(t *testing.T) {
 }
 
 func TestApp_Run_LargeInput(t *testing.T) {
-	if !dockerAvailable() { t.Skip("Docker not available") }
+	if !dockerAvailable() {
+		t.Skip("Docker not available")
+	}
 	tempDir := t.TempDir()
 
 	// Create a large input with many commands
@@ -889,7 +903,7 @@ func TestApp_Run_LargeInput(t *testing.T) {
 		AllowedExtensions: []string{".txt"},
 		ExcludedPaths:     []string{".git"},
 		IOTimeout:         60 * time.Second,
-		IOContainerImage:    "llm-runtime-io:latest",
+		IOContainerImage:  "llm-runtime-io:latest",
 		Interactive:       false,
 		InputFile:         inputFile,
 	}
@@ -932,7 +946,7 @@ func TestApp_Run_PipeMode_StdinError(t *testing.T) {
 		AllowedExtensions: []string{".txt"},
 		ExcludedPaths:     []string{".git"},
 		IOTimeout:         60 * time.Second,
-		IOContainerImage:    "llm-runtime-io:latest",
+		IOContainerImage:  "llm-runtime-io:latest",
 		Interactive:       false,
 		// No InputFile - reads from stdin
 	}
@@ -964,7 +978,9 @@ func TestApp_Run_PipeMode_StdinError(t *testing.T) {
 }
 
 func TestApp_Run_WithAllCommandTypes(t *testing.T) {
-	if !dockerAvailable() { t.Skip("Docker not available") }
+	if !dockerAvailable() {
+		t.Skip("Docker not available")
+	}
 	tempDir := t.TempDir()
 
 	// Create a file to open
@@ -996,7 +1012,7 @@ Try search (will fail):
 		AllowedExtensions: []string{".txt"},
 		ExcludedPaths:     []string{".git"},
 		IOTimeout:         60 * time.Second,
-		IOContainerImage:    "llm-runtime-io:latest",
+		IOContainerImage:  "llm-runtime-io:latest",
 		Interactive:       false,
 		InputFile:         inputFile,
 	}
@@ -1040,7 +1056,7 @@ func TestApp_Run_Verbose_BackupDisabled(t *testing.T) {
 		AllowedExtensions: []string{".txt"},
 		ExcludedPaths:     []string{".git"},
 		IOTimeout:         60 * time.Second,
-		IOContainerImage:    "llm-runtime-io:latest",
+		IOContainerImage:  "llm-runtime-io:latest",
 		Interactive:       false,
 		Verbose:           true,
 		BackupBeforeWrite: false, // Backup disabled
@@ -1080,7 +1096,7 @@ func TestApp_SessionConfigReference(t *testing.T) {
 		AllowedExtensions: []string{".txt"},
 		ExcludedPaths:     []string{".git"},
 		IOTimeout:         60 * time.Second,
-		IOContainerImage:    "llm-runtime-io:latest",
+		IOContainerImage:  "llm-runtime-io:latest",
 	}
 
 	app, err := Bootstrap(cfg)
@@ -1110,7 +1126,7 @@ func TestApp_ExecutorSearchConfig(t *testing.T) {
 		AllowedExtensions: []string{".txt"},
 		ExcludedPaths:     []string{".git"},
 		IOTimeout:         60 * time.Second,
-		IOContainerImage:    "llm-runtime-io:latest",
+		IOContainerImage:  "llm-runtime-io:latest",
 	}
 
 	app, err := Bootstrap(cfg)
@@ -1129,7 +1145,9 @@ func TestApp_ExecutorSearchConfig(t *testing.T) {
 }
 
 func TestApp_Run_OutputToFile_Success(t *testing.T) {
-	if !dockerAvailable() { t.Skip("Docker not available") }
+	if !dockerAvailable() {
+		t.Skip("Docker not available")
+	}
 	tempDir := t.TempDir()
 
 	// Create input with a simple command
@@ -1147,7 +1165,7 @@ func TestApp_Run_OutputToFile_Success(t *testing.T) {
 		AllowedExtensions: []string{".txt"},
 		ExcludedPaths:     []string{".git"},
 		IOTimeout:         60 * time.Second,
-		IOContainerImage:    "llm-runtime-io:latest",
+		IOContainerImage:  "llm-runtime-io:latest",
 		Interactive:       false,
 		InputFile:         inputFile,
 		OutputFile:        outputFile,
@@ -1188,7 +1206,7 @@ func TestApp_Run_InteractiveMode_EmptyInput(t *testing.T) {
 		AllowedExtensions: []string{".txt"},
 		ExcludedPaths:     []string{".git"},
 		IOTimeout:         60 * time.Second,
-		IOContainerImage:    "llm-runtime-io:latest",
+		IOContainerImage:  "llm-runtime-io:latest",
 		Interactive:       true,
 	}
 

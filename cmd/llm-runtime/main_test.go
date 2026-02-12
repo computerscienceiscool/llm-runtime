@@ -106,7 +106,9 @@ func TestBootstrapWithInvalidRoot(t *testing.T) {
 
 // TestPipeMode verifies basic pipe mode functionality
 func TestPipeMode(t *testing.T) {
-	if !dockerAvailable() { t.Skip("Docker not available") }
+	if !dockerAvailable() {
+		t.Skip("Docker not available")
+	}
 	binary := buildTestBinary(t)
 	defer os.Remove(binary)
 

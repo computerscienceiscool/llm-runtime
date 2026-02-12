@@ -76,6 +76,15 @@ Maintain zero-padded IDs starting at 001 and do not renumber. Keep only this ind
 - [x] 068 - Remove unused `showPrompts` field from Scanner struct (`scanner/scanner.go`). Removed field and parameter from `NewScanner`. Updated caller in `app.go` and all test call sites.
 - [x] 069 - Log `destroyContainer` error in `healthCheckLoop` (`sandbox/pool.go`). Error now logged to stderr instead of silently dropped.
 - [x] 070 - Add `maxLogPayloadSize` (10MB) guard in `demuxLogs` and `readDockerLogs` (`sandbox/container.go`, `sandbox/io_container.go`). Rejects corrupted Docker stream headers before allocation.
+- [x] 071 - Fix nil pointer dereference in `ValidateIndex` (`search/indexing.go`). Added `else if err != nil` guard after `os.IsNotExist` check so non-existent errors (e.g. permission denied) don't nil-dereference `info.ModTime()`.
+- [x] 072 - Add missing `rows.Err()` check after iteration loop in `ValidateIndex` (`search/indexing.go`). Database iteration errors no longer silently lost.
+- [x] 073 - Remove unused `storedHash` variable and `content_hash` from SQL query in `ValidateIndex` (`search/indexing.go`). Hash validation was never implemented despite the comment.
+- [x] 074 - Remove unused `Session.CommandsRun` field (`session/session.go`). Command counting lives in `Executor.commandsRun`. Removed field and associated tests.
+- [x] 075 - Remove unused `SearchConfig.ChunkSize` field. Removed from `search/config.go`, `config/defaults.go` (default, viper, loader), `config/defaults_test.go`, and `DefaultEmbeddingDims` constant.
+- [x] 076 - Remove unused `SearchConfig.EmbeddingDimensions` field. Removed from `search/config.go`, `config/defaults.go` (default, viper, loader), `config/defaults_test.go`. Dimension remains hardcoded as `const embeddingDimensions = 768` in `similarity.go`.
+- [x] 077 - Check `session.Close()` error in `app.Close()` (`app/app.go`). Now collects both session and pool close errors using `errors.Join`.
+- [x] 078 - Remove stale `.backup` files tracked in git (`pkg/config/defaults.go.backup`, `defaults_test.go.backup`, `types.go.backup`).
+- [x] 079 - Fix pool `healthCheckLoop` deadlock on shutdown (`sandbox/pool.go`). Added `done chan struct{}` to `ContainerPool`. `Close()` closes the channel before `ticker.Stop()`. `healthCheckLoop` select now has `case <-p.done: return` so the goroutine exits promptly.
 
 ## Other TODO Files
 - docs/TODO.md

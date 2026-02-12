@@ -34,6 +34,7 @@ type ContainerPool struct {
 	config                   PoolConfig
 	mu                       sync.RWMutex
 	closed                   bool
+	done                     chan struct{}
 	wg                       sync.WaitGroup
 	healthCheckTicker        *time.Ticker
 	statsContainersCreated   int64
@@ -95,6 +96,7 @@ func NewContainerPool(ctx context.Context, cfg PoolConfig) (*ContainerPool, erro
 		available:  make(chan *PooledContainer, cfg.Size),
 		config:     cfg,
 		closed:     false,
+		done:       make(chan struct{}),
 	}
 
 	// Pre-create startup containers
@@ -342,14 +344,9 @@ func (p *ContainerPool) healthCheckLoop() {
 	defer p.wg.Done()
 
 	for {
-		p.mu.RLock()
-		if p.closed {
-			p.mu.RUnlock()
-			return
-		}
-		p.mu.RUnlock()
-
 		select {
+		case <-p.done:
+			return
 		case <-p.healthCheckTicker.C:
 			// Use a per-tick timeout to avoid blocking indefinitely on Docker
 			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -405,12 +402,11 @@ func (p *ContainerPool) Close() error {
 	p.closed = true
 	p.mu.Unlock()
 
-	// Stop health check
+	// Signal health check goroutine to stop and wait for it
+	close(p.done)
 	if p.healthCheckTicker != nil {
 		p.healthCheckTicker.Stop()
 	}
-
-	// Wait for health check goroutine
 	p.wg.Wait()
 
 	// Close available channel

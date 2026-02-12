@@ -10,12 +10,12 @@ import (
 
 // SearchResult represents a single search result
 type SearchResult struct {
-	FilePath   string
-	Score      float32
-	Preview    string
-	LineCount  int
-	FileSize   int64
-	Relevance  string
+	FilePath  string
+	Score     float32
+	Preview   string
+	LineCount int
+	FileSize  int64
+	Relevance string
 }
 
 // FormatSearchResults formats search results for display

@@ -49,9 +49,6 @@ func TestNewSession(t *testing.T) {
 			t.Error("Session StartTime should be set")
 		}
 
-		if session.CommandsRun != 0 {
-			t.Errorf("CommandsRun = %d, want 0", session.CommandsRun)
-		}
 	})
 
 	t.Run("generates unique session IDs", func(t *testing.T) {
@@ -285,21 +282,6 @@ func TestSession_Fields(t *testing.T) {
 	tempDir := t.TempDir()
 	os.Chdir(tempDir)
 	defer os.Chdir(origDir)
-
-	t.Run("CommandsRun can be incremented", func(t *testing.T) {
-		cfg := &config.Config{}
-		session := NewSession(cfg)
-
-		if session.CommandsRun != 0 {
-			t.Errorf("Initial CommandsRun = %d, want 0", session.CommandsRun)
-		}
-
-		session.CommandsRun++
-
-		if session.CommandsRun != 1 {
-			t.Errorf("CommandsRun after increment = %d, want 1", session.CommandsRun)
-		}
-	})
 
 	t.Run("Config is accessible", func(t *testing.T) {
 		cfg := &config.Config{

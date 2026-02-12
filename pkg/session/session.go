@@ -13,7 +13,6 @@ import (
 type Session struct {
 	ID          string
 	Config      *config.Config
-	CommandsRun int
 	StartTime   time.Time
 	AuditLogger *log.Logger
 	auditFile   *os.File

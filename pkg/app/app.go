@@ -2,6 +2,7 @@ package app
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -9,8 +10,8 @@ import (
 	"time"
 
 	"github.com/computerscienceiscool/llm-runtime/pkg/config"
-	"github.com/computerscienceiscool/llm-runtime/pkg/sandbox"
 	"github.com/computerscienceiscool/llm-runtime/pkg/evaluator"
+	"github.com/computerscienceiscool/llm-runtime/pkg/sandbox"
 	"github.com/computerscienceiscool/llm-runtime/pkg/scanner"
 	"github.com/computerscienceiscool/llm-runtime/pkg/search"
 	"github.com/computerscienceiscool/llm-runtime/pkg/session"
@@ -190,11 +191,16 @@ func (a *App) GetSearchConfig() *search.SearchConfig {
 
 // Close cleans up app resources
 func (a *App) Close() error {
+	var errs []error
 	if a.session != nil {
-		a.session.Close()
+		if err := a.session.Close(); err != nil {
+			errs = append(errs, fmt.Errorf("session close: %w", err))
+		}
 	}
 	if a.pool != nil {
-		return a.pool.Close()
+		if err := a.pool.Close(); err != nil {
+			errs = append(errs, fmt.Errorf("pool close: %w", err))
+		}
 	}
-	return nil
+	return errors.Join(errs...)
 }
