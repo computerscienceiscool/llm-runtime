@@ -21,7 +21,6 @@ func TestScannerStateString(t *testing.T) {
 		{StateExec, "StateExec"},
 		{StateExecBody, "StateExecBody"},
 		{StateSearch, "StateSearch"},
-		{StateExecute, "StateExecute"},
 	}
 
 	for _, tt := range tests {
@@ -37,7 +36,7 @@ func TestScannerStateString(t *testing.T) {
 // TestNewScanner verifies scanner initialization
 func TestNewScanner(t *testing.T) {
 	reader := bufio.NewReader(strings.NewReader(""))
-	scanner := NewScanner(reader, false)
+	scanner := NewScanner(reader)
 
 	if scanner == nil {
 		t.Fatal("NewScanner() returned nil")
@@ -59,7 +58,7 @@ func TestNewScanner(t *testing.T) {
 // TestTransitionTo verifies state transitions work
 func TestTransitionTo(t *testing.T) {
 	reader := bufio.NewReader(strings.NewReader(""))
-	scanner := NewScanner(reader, false)
+	scanner := NewScanner(reader)
 
 	scanner.transitionTo(StateTagOpen)
 	if scanner.state != StateTagOpen {
@@ -75,7 +74,7 @@ func TestTransitionTo(t *testing.T) {
 // TestResetCommand verifies command reset
 func TestResetCommand(t *testing.T) {
 	reader := bufio.NewReader(strings.NewReader(""))
-	scanner := NewScanner(reader, false)
+	scanner := NewScanner(reader)
 
 	scanner.currentCmd = &Command{Type: "test"}
 	scanner.buffer.WriteString("some data")
@@ -94,7 +93,7 @@ func TestResetCommand(t *testing.T) {
 // TestStartCommand verifies command initialization
 func TestStartCommand(t *testing.T) {
 	reader := bufio.NewReader(strings.NewReader(""))
-	scanner := NewScanner(reader, false)
+	scanner := NewScanner(reader)
 
 	scanner.buffer.WriteString("old data")
 
@@ -117,7 +116,7 @@ func TestStartCommand(t *testing.T) {
 func TestScan_OpenCommand(t *testing.T) {
 	input := "<open README.md>\n"
 	reader := bufio.NewReader(strings.NewReader(input))
-	scanner := NewScanner(reader, false)
+	scanner := NewScanner(reader)
 
 	cmd := scanner.Scan()
 
@@ -138,7 +137,7 @@ func TestScan_OpenCommand(t *testing.T) {
 func TestScan_OpenCommandWithSpaces(t *testing.T) {
 	input := "<open  src/main.go  >\n"
 	reader := bufio.NewReader(strings.NewReader(input))
-	scanner := NewScanner(reader, false)
+	scanner := NewScanner(reader)
 
 	cmd := scanner.Scan()
 
@@ -155,7 +154,7 @@ func TestScan_OpenCommandWithSpaces(t *testing.T) {
 func TestScan_WriteCommand(t *testing.T) {
 	input := "<write test.txt>hello world</write>\n"
 	reader := bufio.NewReader(strings.NewReader(input))
-	scanner := NewScanner(reader, false)
+	scanner := NewScanner(reader)
 
 	cmd := scanner.Scan()
 
@@ -185,7 +184,7 @@ server:
 </write>
 `
 	reader := bufio.NewReader(strings.NewReader(input))
-	scanner := NewScanner(reader, false)
+	scanner := NewScanner(reader)
 
 	cmd := scanner.Scan()
 
@@ -207,7 +206,7 @@ server:
 func TestScan_ExecCommand(t *testing.T) {
 	input := "<exec go test>\n"
 	reader := bufio.NewReader(strings.NewReader(input))
-	scanner := NewScanner(reader, false)
+	scanner := NewScanner(reader)
 
 	cmd := scanner.Scan()
 
@@ -232,7 +231,7 @@ func TestScan_ExecCommand(t *testing.T) {
 func TestScan_SearchCommand(t *testing.T) {
 	input := "<search TODO comments>\n"
 	reader := bufio.NewReader(strings.NewReader(input))
-	scanner := NewScanner(reader, false)
+	scanner := NewScanner(reader)
 
 	cmd := scanner.Scan()
 
@@ -256,7 +255,7 @@ func TestScan_MultipleCommands(t *testing.T) {
 <exec go test>
 `
 	reader := bufio.NewReader(strings.NewReader(input))
-	scanner := NewScanner(reader, false)
+	scanner := NewScanner(reader)
 
 	// First command
 	cmd1 := scanner.Scan()
@@ -287,7 +286,7 @@ func TestScan_MultipleCommands(t *testing.T) {
 func TestScan_EmptyInput(t *testing.T) {
 	input := ""
 	reader := bufio.NewReader(strings.NewReader(input))
-	scanner := NewScanner(reader, false)
+	scanner := NewScanner(reader)
 
 	cmd := scanner.Scan()
 
@@ -300,7 +299,7 @@ func TestScan_EmptyInput(t *testing.T) {
 func TestScan_NoCommands(t *testing.T) {
 	input := "Just some regular text without commands\n"
 	reader := bufio.NewReader(strings.NewReader(input))
-	scanner := NewScanner(reader, false)
+	scanner := NewScanner(reader)
 
 	cmd := scanner.Scan()
 
@@ -313,7 +312,7 @@ func TestScan_NoCommands(t *testing.T) {
 func TestScan_InvalidTag(t *testing.T) {
 	input := "<invalid command>\n"
 	reader := bufio.NewReader(strings.NewReader(input))
-	scanner := NewScanner(reader, false)
+	scanner := NewScanner(reader)
 
 	cmd := scanner.Scan()
 
@@ -326,7 +325,7 @@ func TestScan_InvalidTag(t *testing.T) {
 func TestScan_WriteEmptyContent(t *testing.T) {
 	input := "<write empty.txt></write>\n"
 	reader := bufio.NewReader(strings.NewReader(input))
-	scanner := NewScanner(reader, false)
+	scanner := NewScanner(reader)
 
 	cmd := scanner.Scan()
 
@@ -347,7 +346,7 @@ func TestScan_WriteEmptyContent(t *testing.T) {
 func TestScan_CommandsWithText(t *testing.T) {
 	input := "Some text before\n<open file.go>\nSome text after\n"
 	reader := bufio.NewReader(strings.NewReader(input))
-	scanner := NewScanner(reader, false)
+	scanner := NewScanner(reader)
 
 	cmd := scanner.Scan()
 
@@ -368,7 +367,7 @@ func TestScan_CommandsWithText(t *testing.T) {
 func TestScan_WriteWithSpecialCharacters(t *testing.T) {
 	input := "<write test.txt>Content with <brackets> and special chars: !@#$%</write>\n"
 	reader := bufio.NewReader(strings.NewReader(input))
-	scanner := NewScanner(reader, false)
+	scanner := NewScanner(reader)
 
 	cmd := scanner.Scan()
 
@@ -386,7 +385,7 @@ func TestScan_WriteWithSpecialCharacters(t *testing.T) {
 func TestScan_PathWithSlashes(t *testing.T) {
 	input := "<open internal/config/types.go>\n"
 	reader := bufio.NewReader(strings.NewReader(input))
-	scanner := NewScanner(reader, false)
+	scanner := NewScanner(reader)
 
 	cmd := scanner.Scan()
 
@@ -403,7 +402,7 @@ func TestScan_PathWithSlashes(t *testing.T) {
 func TestScan_ExecSingleLine(t *testing.T) {
 	input := "<exec ls -la>\n"
 	reader := bufio.NewReader(strings.NewReader(input))
-	scanner := NewScanner(reader, false)
+	scanner := NewScanner(reader)
 
 	cmd := scanner.Scan()
 
@@ -424,7 +423,7 @@ func TestScan_ExecSingleLine(t *testing.T) {
 func TestScan_ConsecutiveCommands(t *testing.T) {
 	input := "<open a.go>\n<open b.go>\n<open c.go>\n"
 	reader := bufio.NewReader(strings.NewReader(input))
-	scanner := NewScanner(reader, false)
+	scanner := NewScanner(reader)
 
 	commands := []string{}
 	for {
@@ -451,7 +450,7 @@ func TestScan_ConsecutiveCommands(t *testing.T) {
 func TestScan_WriteWithNestedTags(t *testing.T) {
 	input := "<write test.html><div><p>Hello</p></div></write>\n"
 	reader := bufio.NewReader(strings.NewReader(input))
-	scanner := NewScanner(reader, false)
+	scanner := NewScanner(reader)
 
 	cmd := scanner.Scan()
 
@@ -470,7 +469,7 @@ func TestScan_LongArgument(t *testing.T) {
 	longPath := strings.Repeat("a/", 50) + "file.go"
 	input := "<open " + longPath + ">\n"
 	reader := bufio.NewReader(strings.NewReader(input))
-	scanner := NewScanner(reader, false)
+	scanner := NewScanner(reader)
 
 	cmd := scanner.Scan()
 
@@ -483,11 +482,11 @@ func TestScan_LongArgument(t *testing.T) {
 	}
 }
 
-// TestScan_ShowPrompts tests scanner with prompts enabled
+// TestScan_ShowPrompts tests scanner parses commands correctly
 func TestScan_ShowPrompts(t *testing.T) {
 	input := "<open test.go>\n"
 	reader := bufio.NewReader(strings.NewReader(input))
-	scanner := NewScanner(reader, true) // showPrompts = true
+	scanner := NewScanner(reader)
 
 	cmd := scanner.Scan()
 
@@ -496,7 +495,7 @@ func TestScan_ShowPrompts(t *testing.T) {
 	}
 
 	if cmd.Type != "open" || cmd.Argument != "test.go" {
-		t.Errorf("Command not parsed correctly with showPrompts=true")
+		t.Errorf("Command not parsed correctly")
 	}
 }
 
@@ -504,7 +503,7 @@ func TestScan_ShowPrompts(t *testing.T) {
 func TestScan_ErrReturnsNilOnEOF(t *testing.T) {
 	input := "<open file.go>\n"
 	reader := bufio.NewReader(strings.NewReader(input))
-	sc := NewScanner(reader, false)
+	sc := NewScanner(reader)
 
 	cmd := sc.Scan()
 	if cmd == nil {
@@ -526,7 +525,7 @@ func TestScan_ErrReturnsNilOnEOF(t *testing.T) {
 func TestScan_ErrReturnsReadError(t *testing.T) {
 	// errReader always returns an error
 	r := bufio.NewReader(&errReader{})
-	sc := NewScanner(r, false)
+	sc := NewScanner(r)
 
 	cmd := sc.Scan()
 	if cmd != nil {
@@ -552,7 +551,7 @@ func TestScan_WriteBufferOverflow(t *testing.T) {
 	// This avoids the O(n^2) cost of processing 10MB byte-by-byte through
 	// strings.Contains on every byte.
 	reader := bufio.NewReader(strings.NewReader("more data\n"))
-	sc := NewScanner(reader, false)
+	sc := NewScanner(reader)
 
 	// Simulate state as if we already parsed "<write big.txt>"
 	sc.startCommand("write")
@@ -582,7 +581,7 @@ func BenchmarkScan_SimpleOpen(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		reader := bufio.NewReader(strings.NewReader(input))
-		scanner := NewScanner(reader, false)
+		scanner := NewScanner(reader)
 		scanner.Scan()
 	}
 }
@@ -593,7 +592,7 @@ func BenchmarkScan_Write(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		reader := bufio.NewReader(strings.NewReader(input))
-		scanner := NewScanner(reader, false)
+		scanner := NewScanner(reader)
 		scanner.Scan()
 	}
 }
@@ -604,7 +603,7 @@ func BenchmarkScan_MultipleCommands(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		reader := bufio.NewReader(strings.NewReader(input))
-		scanner := NewScanner(reader, false)
+		scanner := NewScanner(reader)
 		for scanner.Scan() != nil {
 		}
 	}

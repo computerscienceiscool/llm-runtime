@@ -1,19 +1,18 @@
 package evaluator
 
 import (
+	"context"
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
-	"context"
 	"go/format"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
 
-	"github.com/computerscienceiscool/llm-runtime/pkg/sandbox"
-
 	"github.com/computerscienceiscool/llm-runtime/pkg/config"
+	"github.com/computerscienceiscool/llm-runtime/pkg/sandbox"
 	"github.com/computerscienceiscool/llm-runtime/pkg/scanner"
 )
 
@@ -35,11 +34,12 @@ func CreateBackup(filePath string) (string, error) {
 	return backupPath, nil
 }
 
-// FormatContent formats content based on file type
-func FormatContent(filePath, content string) (string, error) {
+// FormatContent formats content based on file type.
+// Returns the original content unchanged if formatting fails or the file type is not supported.
+func FormatContent(filePath, content string) string {
 	lastDot := strings.LastIndex(filePath, ".")
 	if lastDot == -1 {
-		return content, nil
+		return content
 	}
 
 	ext := strings.ToLower(filePath[lastDot:])
@@ -48,21 +48,21 @@ func FormatContent(filePath, content string) (string, error) {
 	case ".go":
 		formatted, err := format.Source([]byte(content))
 		if err != nil {
-			return content, nil
+			return content
 		}
-		return string(formatted), nil
+		return string(formatted)
 	case ".json":
 		var jsonData interface{}
 		if err := json.Unmarshal([]byte(content), &jsonData); err != nil {
-			return content, nil
+			return content
 		}
 		formatted, err := json.MarshalIndent(jsonData, "", "  ")
 		if err != nil {
-			return content, nil
+			return content
 		}
-		return string(formatted), nil
+		return string(formatted)
 	default:
-		return content, nil
+		return content
 	}
 }
 
@@ -145,17 +145,7 @@ func ExecuteWrite(filePath, content string, cfg *config.Config, auditLog func(cm
 	}
 
 	// Format content based on file type
-	formattedContent, err := FormatContent(filePath, content)
-	if err != nil {
-		result.Success = false
-		fullError := fmt.Errorf("FORMATTING_ERROR: %w", err)
-		result.Error = SanitizeError(fullError) // Sanitized for LLM
-		result.ExecutionTime = time.Since(startTime)
-		if auditLog != nil {
-			auditLog("write", filePath, false, fullError.Error()) // Full error to audit
-		}
-		return result
-	}
+	formattedContent := FormatContent(filePath, content)
 
 	// Write file using container
 	ctx, cancel := context.WithTimeout(context.Background(), cfg.IOTimeout)

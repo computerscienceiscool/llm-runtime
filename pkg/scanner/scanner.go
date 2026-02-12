@@ -24,7 +24,6 @@ const (
 	StateExec                          // Parsing <exec command>
 	StateExecBody                      // Accumulating exec body
 	StateSearch                        // Parsing <search query>
-	StateExecute                       // Ready to execute command
 )
 
 // String returns the name of the state (for debugging)
@@ -46,8 +45,6 @@ func (s ScannerState) String() string {
 		return "StateExecBody"
 	case StateSearch:
 		return "StateSearch"
-	case StateExecute:
-		return "StateExecute"
 	default:
 		return "StateUnknown"
 	}
@@ -55,12 +52,11 @@ func (s ScannerState) String() string {
 
 // Scanner implements a state-machine based input processor
 type Scanner struct {
-	state       ScannerState
-	buffer      strings.Builder
-	currentCmd  *Command
-	reader      *bufio.Reader
-	showPrompts bool
-	lastErr     error
+	state      ScannerState
+	buffer     strings.Builder
+	currentCmd *Command
+	reader     *bufio.Reader
+	lastErr    error
 }
 
 // checkBufferLimit returns true if buffer is within limits
@@ -69,11 +65,10 @@ func (s *Scanner) checkBufferLimit() bool {
 }
 
 // NewScanner creates a new state-machine scanner
-func NewScanner(reader *bufio.Reader, showPrompts bool) *Scanner {
+func NewScanner(reader *bufio.Reader) *Scanner {
 	return &Scanner{
-		state:       StateScanning,
-		reader:      reader,
-		showPrompts: showPrompts,
+		state:  StateScanning,
+		reader: reader,
 	}
 }
 

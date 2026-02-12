@@ -142,7 +142,9 @@ func RunContainer(cfg ContainerConfig) (ContainerResult, error) {
 		if err != nil {
 			return result, fmt.Errorf("failed to write stdin: %w", err)
 		}
-		hijackedResp.CloseWrite()
+		if err := hijackedResp.CloseWrite(); err != nil {
+			return result, fmt.Errorf("failed to close stdin: %w", err)
+		}
 	}
 
 	// Wait for container to finish
@@ -209,6 +211,10 @@ func parseMemoryLimit(limit string) (int64, error) {
 	return 0, fmt.Errorf("invalid memory limit format (use e.g. '512m' or '1g'): %q", limit)
 }
 
+// maxLogPayloadSize is the maximum size of a single Docker log frame payload (10MB).
+// Protects against corrupted Docker stream headers that could cause excessive allocation.
+const maxLogPayloadSize = 10 * 1024 * 1024
+
 // demuxLogs separates stdout and stderr from Docker logs stream.
 // Both stdout and stderr writers must be non-nil.
 func demuxLogs(reader io.Reader, stdout, stderr io.Writer) error {
@@ -230,6 +236,9 @@ func demuxLogs(reader io.Reader, stdout, stderr io.Writer) error {
 
 		streamType := buf[0]
 		size := int(buf[4])<<24 | int(buf[5])<<16 | int(buf[6])<<8 | int(buf[7])
+		if size > maxLogPayloadSize {
+			return fmt.Errorf("Docker log frame too large: %d bytes (max %d)", size, maxLogPayloadSize)
+		}
 
 		payload := make([]byte, size)
 		_, err = io.ReadFull(reader, payload)
@@ -276,7 +285,7 @@ func ExecuteInPooledContainer(ctx context.Context, pool *ContainerPool, command 
 	}
 
 	// Execute command in the container
-	output, execErr := executeInExistingContainer(ctx, pool.client, container.ID, command, repoRoot)
+	output, execErr := executeInExistingContainer(ctx, pool.client, container.ID, command)
 
 	// Always return container to pool, even if execution failed
 	returnErr := pool.Return(ctx, container)
@@ -293,7 +302,7 @@ func ExecuteInPooledContainer(ctx context.Context, pool *ContainerPool, command 
 }
 
 // executeInExistingContainer runs a command in an already-running container
-func executeInExistingContainer(ctx context.Context, cli *client.Client, containerID string, command string, repoRoot string) (string, error) {
+func executeInExistingContainer(ctx context.Context, cli *client.Client, containerID string, command string) (string, error) {
 	// Create exec instance
 	execConfig := types.ExecConfig{
 		Cmd:          []string{"sh", "-c", command},

@@ -116,10 +116,7 @@ func TestFormatContent_GoFile(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result, err := FormatContent("test.go", tt.input)
-			if err != nil {
-				t.Fatalf("FormatContent failed: %v", err)
-			}
+			result := FormatContent("test.go", tt.input)
 
 			if result != tt.expected {
 				t.Errorf("expected:\n%q\ngot:\n%q", tt.expected, result)
@@ -131,10 +128,7 @@ func TestFormatContent_GoFile(t *testing.T) {
 func TestFormatContent_GoFileInvalidSyntax(t *testing.T) {
 	// Invalid Go code should return original content
 	invalidCode := "package main\nfunc {{{ invalid"
-	result, err := FormatContent("test.go", invalidCode)
-	if err != nil {
-		t.Fatalf("FormatContent should not error on invalid Go: %v", err)
-	}
+	result := FormatContent("test.go", invalidCode)
 
 	if result != invalidCode {
 		t.Errorf("invalid Go code should be returned as-is")
@@ -166,10 +160,7 @@ func TestFormatContent_JSONFile(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result, err := FormatContent("test.json", tt.input)
-			if err != nil {
-				t.Fatalf("FormatContent failed: %v", err)
-			}
+			result := FormatContent("test.json", tt.input)
 
 			if result != tt.expected {
 				t.Errorf("expected:\n%s\ngot:\n%s", tt.expected, result)
@@ -180,10 +171,7 @@ func TestFormatContent_JSONFile(t *testing.T) {
 
 func TestFormatContent_JSONFileInvalidSyntax(t *testing.T) {
 	invalidJSON := `{"invalid": json}`
-	result, err := FormatContent("test.json", invalidJSON)
-	if err != nil {
-		t.Fatalf("FormatContent should not error on invalid JSON: %v", err)
-	}
+	result := FormatContent("test.json", invalidJSON)
 
 	if result != invalidJSON {
 		t.Errorf("invalid JSON should be returned as-is")
@@ -205,10 +193,7 @@ func TestFormatContent_OtherExtensions(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.filename, func(t *testing.T) {
-			result, err := FormatContent(tt.filename, tt.content)
-			if err != nil {
-				t.Fatalf("FormatContent failed: %v", err)
-			}
+			result := FormatContent(tt.filename, tt.content)
 
 			// Other extensions should pass through unchanged
 			if result != tt.content {
@@ -222,13 +207,13 @@ func TestFormatContent_CaseInsensitiveExtension(t *testing.T) {
 	content := `{"key":"value"}`
 
 	// Test uppercase extension
-	result, _ := FormatContent("test.JSON", content)
+	result := FormatContent("test.JSON", content)
 	if !strings.Contains(result, "\n") {
 		t.Error("uppercase .JSON should be formatted")
 	}
 
 	// Test mixed case
-	result, _ = FormatContent("test.Json", content)
+	result = FormatContent("test.Json", content)
 	if !strings.Contains(result, "\n") {
 		t.Error("mixed case .Json should be formatted")
 	}
@@ -1186,11 +1171,8 @@ func TestCreateBackup_PermissionDenied(t *testing.T) {
 
 func TestFormatContent_NoExtension(t *testing.T) {
 	content := "content without extension"
-	result, err := FormatContent("Makefile", content)
+	result := FormatContent("Makefile", content)
 
-	if err != nil {
-		t.Errorf("unexpected error: %v", err)
-	}
 	if result != content {
 		t.Error("content should be unchanged for files without extension")
 	}
@@ -1241,10 +1223,7 @@ func TestFormatContent_EmptyContent(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.filename, func(t *testing.T) {
-			result, err := FormatContent(tt.filename, tt.content)
-			if err != nil {
-				t.Errorf("unexpected error: %v", err)
-			}
+			result := FormatContent(tt.filename, tt.content)
 			if result != tt.content {
 				t.Errorf("empty content should remain empty")
 			}

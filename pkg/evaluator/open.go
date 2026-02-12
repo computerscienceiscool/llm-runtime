@@ -100,8 +100,6 @@ func ExecuteOpen(filepath string, cfg *config.Config, auditLog func(cmd, arg str
 		return result
 	}
 	// Read the file using container
-	var content []byte
-	// Use containerized I/O
 	ctx, cancel := context.WithTimeout(context.Background(), cfg.IOTimeout)
 	defer cancel()
 	contentStr, err := sandbox.ReadFileInContainerPooled(
@@ -120,10 +118,9 @@ func ExecuteOpen(filepath string, cfg *config.Config, auditLog func(cmd, arg str
 		}
 		return result
 	}
-	content = []byte(contentStr)
 
 	result.Success = true
-	result.Result = string(content)
+	result.Result = contentStr
 	result.ExecutionTime = time.Since(startTime)
 	if auditLog != nil {
 		auditLog("open", filepath, true, "")

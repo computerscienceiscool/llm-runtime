@@ -66,6 +66,16 @@ Maintain zero-padded IDs starting at 001 and do not renumber. Keep only this ind
 - [x] 057 - Remove 7 unused constants from `constants.go`: `DefaultContainerCPUs`, `AuditLogMaxSize`, `AuditLogMaxBackups`, `AuditLogMaxAge`, `MaxSessionsPerUser`, `MaxBackups`, `BackupExtension`.
 - [x] 058 - Hoist compiled regexes in `errors.go` to package-level `var` block. `sanitizePaths` and `sanitizeUserInfo` no longer recompile on every call.
 - [x] 059 - Add `t.Skip` guards to all Docker-dependent tests. Added `dockerAvailable()` helpers and skip checks to 40 tests across 7 files. `go test ./...` now passes clean without Docker.
+- [x] 061 - Remove dead `content []byte` variable in `evaluator/open.go`. Eliminated pointless `string->[]byte->string` round-trip; use `contentStr` directly.
+- [x] 062 - Remove unused error return from `FormatContent` and dead error check in `ExecuteWrite` (`evaluator/write.go`). Changed signature to return `string` only. Removed 10-line dead error block. Updated all test callers.
+- [x] 063 - Fix import ordering in `evaluator/write.go`. Moved `"context"` to correct alphabetical position; consolidated third-party import group.
+- [x] 064 - Check `hijackedResp.CloseWrite()` error in `sandbox/container.go`. Returns error instead of silently dropping it.
+- [x] 065 - Remove unused `repoRoot` parameter from `executeInExistingContainer` (`sandbox/container.go`). Updated caller in `ExecuteInPooledContainer`.
+- [x] 066 - Consolidate duplicate `parseMemoryLimitIO` into `parseMemoryLimit` (`sandbox/io_container.go`). Removed duplicate function, updated callers and tests.
+- [x] 067 - Remove unused `StateExecute` constant from `scanner/scanner.go`. Removed from enum, `String()` method, and test.
+- [x] 068 - Remove unused `showPrompts` field from Scanner struct (`scanner/scanner.go`). Removed field and parameter from `NewScanner`. Updated caller in `app.go` and all test call sites.
+- [x] 069 - Log `destroyContainer` error in `healthCheckLoop` (`sandbox/pool.go`). Error now logged to stderr instead of silently dropped.
+- [x] 070 - Add `maxLogPayloadSize` (10MB) guard in `demuxLogs` and `readDockerLogs` (`sandbox/container.go`, `sandbox/io_container.go`). Rejects corrupted Docker stream headers before allocation.
 
 ## Other TODO Files
 - docs/TODO.md

@@ -3,6 +3,7 @@ package sandbox
 import (
 	"context"
 	"fmt"
+	"os"
 	"sync"
 	"time"
 
@@ -371,7 +372,9 @@ func (p *ContainerPool) healthCheckLoop() {
 
 						// Remove and destroy idle container
 						p.removeContainer(c)
-						p.destroyContainer(ctx, c)
+						if err := p.destroyContainer(ctx, c); err != nil {
+							fmt.Fprintf(os.Stderr, "Warning: failed to destroy idle container %s: %v\n", c.ID[:12], err)
+						}
 						continue
 					}
 				}

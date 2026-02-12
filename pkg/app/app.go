@@ -60,7 +60,7 @@ func (a *App) Run() error {
 // scanInput handles continuous input/output using state machine scanner
 func (a *App) scanInput(exec *evaluator.Executor, startTime time.Time, showPrompts bool, input io.Reader, output io.Writer) {
 	reader := bufio.NewReader(input)
-	sc := scanner.NewScanner(reader, showPrompts)
+	sc := scanner.NewScanner(reader)
 
 	if showPrompts {
 		fmt.Fprintln(os.Stderr, "LLM Tool - Interactive Mode")

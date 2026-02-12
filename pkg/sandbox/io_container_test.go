@@ -170,17 +170,17 @@ func TestParseMemoryLimitIO(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result, err := parseMemoryLimitIO(tt.limit)
+			result, err := parseMemoryLimit(tt.limit)
 			if tt.expectErr {
 				if err == nil {
-					t.Errorf("parseMemoryLimitIO(%q) expected error, got nil", tt.limit)
+					t.Errorf("parseMemoryLimit(%q) expected error, got nil", tt.limit)
 				}
 			} else {
 				if err != nil {
-					t.Errorf("parseMemoryLimitIO(%q) unexpected error: %v", tt.limit, err)
+					t.Errorf("parseMemoryLimit(%q) unexpected error: %v", tt.limit, err)
 				}
 				if result != tt.expected {
-					t.Errorf("parseMemoryLimitIO(%q) = %d, want %d", tt.limit, result, tt.expected)
+					t.Errorf("parseMemoryLimit(%q) = %d, want %d", tt.limit, result, tt.expected)
 				}
 			}
 		})

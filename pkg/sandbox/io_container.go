@@ -36,7 +36,7 @@ func RunIOContainer(repoRoot, containerImage, command string, timeout time.Durat
 	}
 
 	// Parse memory limit
-	memoryBytes, err := parseMemoryLimitIO(memLimit)
+	memoryBytes, err := parseMemoryLimit(memLimit)
 	if err != nil {
 		return "", fmt.Errorf("invalid container config: %w", err)
 	}
@@ -145,7 +145,7 @@ func WriteFileInContainer(filePath, content, repoRoot, containerImage string, ti
 		User:       "1000:1000",
 	}
 
-	memoryBytes, err := parseMemoryLimitIO(memLimit)
+	memoryBytes, err := parseMemoryLimit(memLimit)
 	if err != nil {
 		return fmt.Errorf("invalid container config: %w", err)
 	}
@@ -232,29 +232,6 @@ func ValidateIOContainer(repoRoot, containerImage string) error {
 	return nil
 }
 
-// parseMemoryLimitIO converts memory limit string to bytes (for io_container).
-// Returns an error for invalid formats instead of silently defaulting to 0 (unlimited).
-func parseMemoryLimitIO(limit string) (int64, error) {
-	if limit == "" {
-		return 0, nil
-	}
-	if strings.HasSuffix(limit, "m") || strings.HasSuffix(limit, "M") {
-		var mb int64
-		if n, _ := fmt.Sscanf(limit, "%d", &mb); n != 1 || mb <= 0 {
-			return 0, fmt.Errorf("invalid memory limit: %q", limit)
-		}
-		return mb * 1024 * 1024, nil
-	}
-	if strings.HasSuffix(limit, "g") || strings.HasSuffix(limit, "G") {
-		var gb int64
-		if n, _ := fmt.Sscanf(limit, "%d", &gb); n != 1 || gb <= 0 {
-			return 0, fmt.Errorf("invalid memory limit: %q", limit)
-		}
-		return gb * 1024 * 1024 * 1024, nil
-	}
-	return 0, fmt.Errorf("invalid memory limit format (use e.g. '512m' or '1g'): %q", limit)
-}
-
 // readDockerLogs reads Docker logs and extracts stdout.
 // The stdout writer must be non-nil.
 func readDockerLogs(reader io.Reader, stdout io.Writer) error {
@@ -272,6 +249,9 @@ func readDockerLogs(reader io.Reader, stdout io.Writer) error {
 		}
 
 		size := int(buf[4])<<24 | int(buf[5])<<16 | int(buf[6])<<8 | int(buf[7])
+		if size > maxLogPayloadSize {
+			return fmt.Errorf("Docker log frame too large: %d bytes (max %d)", size, maxLogPayloadSize)
+		}
 		payload := make([]byte, size)
 		_, err = io.ReadFull(reader, payload)
 		if err != nil {
