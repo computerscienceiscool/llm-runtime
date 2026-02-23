@@ -865,7 +865,7 @@ Planned features for future versions:
 
 ## License
 
-[License information]
+GPL-3.0-or-later — see [LICENSE](LICENSE)
 
 ## Support
 
