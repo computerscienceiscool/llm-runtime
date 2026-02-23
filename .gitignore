@@ -117,6 +117,7 @@ Thumbs.db
 .grok
 .grok.lock
 .aidda/
+.claude/
 .lock
 
 
