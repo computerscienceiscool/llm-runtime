@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/docker/docker/api/types"
+	imagetypes "github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/client"
 )
 
@@ -43,7 +43,7 @@ func PullDockerImage(image string) error {
 	}
 
 	// Pull the image
-	reader, err := cli.ImagePull(ctx, image, types.ImagePullOptions{})
+	reader, err := cli.ImagePull(ctx, image, imagetypes.PullOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to pull Docker image: %w", err)
 	}

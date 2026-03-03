@@ -113,12 +113,12 @@ func RunContainer(cfg ContainerConfig) (ContainerResult, error) {
 	if err != nil {
 		return result, fmt.Errorf("failed to create container: %w", err)
 	}
-	defer cli.ContainerRemove(ctx, resp.ID, types.ContainerRemoveOptions{Force: true})
+	defer cli.ContainerRemove(ctx, resp.ID, container.RemoveOptions{Force: true})
 
 	// Attach stdin if provided
 	var hijackedResp types.HijackedResponse
 	if cfg.Stdin != "" {
-		attachOpts := types.ContainerAttachOptions{
+		attachOpts := container.AttachOptions{
 			Stream: true,
 			Stdin:  true,
 			Stdout: true,
@@ -132,7 +132,7 @@ func RunContainer(cfg ContainerConfig) (ContainerResult, error) {
 	}
 
 	// Start container
-	if err := cli.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{}); err != nil {
+	if err := cli.ContainerStart(ctx, resp.ID, container.StartOptions{}); err != nil {
 		return result, fmt.Errorf("failed to start container: %w", err)
 	}
 
@@ -162,7 +162,7 @@ func RunContainer(cfg ContainerConfig) (ContainerResult, error) {
 	}
 
 	// Get container logs
-	logReader, err := cli.ContainerLogs(ctx, resp.ID, types.ContainerLogsOptions{
+	logReader, err := cli.ContainerLogs(ctx, resp.ID, container.LogsOptions{
 		ShowStdout: true,
 		ShowStderr: true,
 	})
@@ -304,7 +304,7 @@ func ExecuteInPooledContainer(ctx context.Context, pool *ContainerPool, command 
 // executeInExistingContainer runs a command in an already-running container
 func executeInExistingContainer(ctx context.Context, cli *client.Client, containerID string, command string) (string, error) {
 	// Create exec instance
-	execConfig := types.ExecConfig{
+	execConfig := container.ExecOptions{
 		Cmd:          []string{"sh", "-c", command},
 		AttachStdout: true,
 		AttachStderr: true,
@@ -317,7 +317,7 @@ func executeInExistingContainer(ctx context.Context, cli *client.Client, contain
 	}
 
 	// Attach to exec
-	resp, err := cli.ContainerExecAttach(ctx, execID.ID, types.ExecStartCheck{})
+	resp, err := cli.ContainerExecAttach(ctx, execID.ID, container.ExecStartOptions{})
 	if err != nil {
 		return "", fmt.Errorf("failed to attach to exec: %w", err)
 	}

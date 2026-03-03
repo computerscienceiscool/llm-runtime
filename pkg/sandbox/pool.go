@@ -7,8 +7,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/api/types/container"
+	containertypes "github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/docker/client"
 )
@@ -237,7 +236,7 @@ func (p *ContainerPool) Return(ctx context.Context, container *PooledContainer) 
 // createContainer creates a new container for the pool
 func (p *ContainerPool) createContainer(ctx context.Context) (*PooledContainer, error) {
 	// Create minimal container config - just keeps the container running
-	containerConfig := &container.Config{
+	containerConfig := &containertypes.Config{
 		Image: p.config.Image,
 		Cmd:   []string{"sleep", "infinity"},
 		Tty:   true,
@@ -249,7 +248,7 @@ func (p *ContainerPool) createContainer(ctx context.Context) (*PooledContainer, 
 		return nil, fmt.Errorf("invalid pool config: %w", err)
 	}
 
-	hostConfig := &container.HostConfig{
+	hostConfig := &containertypes.HostConfig{
 		Mounts: []mount.Mount{
 			{
 				Type:     mount.TypeBind,
@@ -259,7 +258,7 @@ func (p *ContainerPool) createContainer(ctx context.Context) (*PooledContainer, 
 			},
 		},
 		NetworkMode: "none",
-		Resources: container.Resources{
+		Resources: containertypes.Resources{
 			Memory:   memoryBytes,
 			NanoCPUs: int64(p.config.CPULimit) * 1000000000,
 		},
@@ -272,8 +271,8 @@ func (p *ContainerPool) createContainer(ctx context.Context) (*PooledContainer, 
 		return nil, fmt.Errorf("failed to create container: %w", err)
 	}
 
-	if err := p.client.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{}); err != nil {
-		if removeErr := p.client.ContainerRemove(ctx, resp.ID, types.ContainerRemoveOptions{Force: true}); removeErr != nil {
+	if err := p.client.ContainerStart(ctx, resp.ID, containertypes.StartOptions{}); err != nil {
+		if removeErr := p.client.ContainerRemove(ctx, resp.ID, containertypes.RemoveOptions{Force: true}); removeErr != nil {
 			return nil, fmt.Errorf("failed to start container: %w (cleanup also failed: %v)", err, removeErr)
 		}
 		return nil, fmt.Errorf("failed to start container: %w", err)
@@ -303,7 +302,7 @@ func (p *ContainerPool) destroyContainer(ctx context.Context, container *PooledC
 		return nil
 	}
 
-	err := p.client.ContainerRemove(ctx, container.ID, types.ContainerRemoveOptions{Force: true})
+	err := p.client.ContainerRemove(ctx, container.ID, containertypes.RemoveOptions{Force: true})
 	if err != nil {
 		return fmt.Errorf("failed to remove container %s: %w", container.ID[:12], err)
 	}

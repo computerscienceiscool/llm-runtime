@@ -9,7 +9,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/docker/api/types/strslice"
@@ -65,10 +64,10 @@ func RunIOContainer(repoRoot, containerImage, command string, timeout time.Durat
 	if err != nil {
 		return "", fmt.Errorf("failed to create container: %w", err)
 	}
-	defer cli.ContainerRemove(ctx, resp.ID, types.ContainerRemoveOptions{Force: true})
+	defer cli.ContainerRemove(ctx, resp.ID, container.RemoveOptions{Force: true})
 
 	// Start container
-	if err := cli.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{}); err != nil {
+	if err := cli.ContainerStart(ctx, resp.ID, container.StartOptions{}); err != nil {
 		return "", fmt.Errorf("failed to start container: %w", err)
 	}
 
@@ -86,7 +85,7 @@ func RunIOContainer(repoRoot, containerImage, command string, timeout time.Durat
 	}
 
 	// Get logs
-	logReader, err := cli.ContainerLogs(ctx, resp.ID, types.ContainerLogsOptions{
+	logReader, err := cli.ContainerLogs(ctx, resp.ID, container.LogsOptions{
 		ShowStdout: true,
 		ShowStderr: true,
 	})
@@ -173,10 +172,10 @@ func WriteFileInContainer(filePath, content, repoRoot, containerImage string, ti
 	if err != nil {
 		return fmt.Errorf("failed to create container: %w", err)
 	}
-	defer cli.ContainerRemove(ctx, resp.ID, types.ContainerRemoveOptions{Force: true})
+	defer cli.ContainerRemove(ctx, resp.ID, container.RemoveOptions{Force: true})
 
 	// Start container
-	if err := cli.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{}); err != nil {
+	if err := cli.ContainerStart(ctx, resp.ID, container.StartOptions{}); err != nil {
 		return fmt.Errorf("failed to start container: %w", err)
 	}
 
